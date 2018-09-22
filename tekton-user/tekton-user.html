@@ -1,0 +1,76 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="tekton-user">
+    <template>
+        <style>
+            #signOut {
+                border: 1px black solid;
+                border-radius: 35px;
+                background: white;
+                width: 120px;
+                position: absolute;
+                right: 5px;
+                top: 8px;
+            }
+
+            #menuButtons {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                position: absolute;
+                top: 150px;
+                left: 240px;
+            }
+
+            #sendUniverse {
+                border: 1px black solid;
+                border-radius: 35px;
+                background: white;
+                width: 160px;
+                display: flex;
+            }
+
+            #viewImpressions {
+                border: 1px black solid;
+                border-radius: 35px;
+                background: white;
+                width: 180px;
+                display: flex;
+                margin-top: 5%;
+            }
+
+        </style>
+
+        <paper-button id = "signOut" on-tap="closeUser">Sign Out</paper-button>
+
+        <div id="menuButtons">
+            <paper-button id = "sendUniverse" on-tap="openUniverseSelection">Send Universe</paper-button>
+            <paper-button id = "viewImpressions">View Impressions</paper-button>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "tekton-user",
+
+            properties: {
+
+            },
+
+            closeUser: function() {
+                this.fire('sign-out-tapped');
+            },
+
+            openAdManager: function() {
+                this.fire('manage-ads-tapped');
+            },
+
+            openUniverseSelection: function() {
+                this.fire('universe-selector-tapped');
+            }
+
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,15 @@
+{
+  "name": "tekton-login",
+  "homepage": "https://github.com/TektonSacState/tekton-login",
+  "authors": [
+    "Jacob Bender <jdbender64@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "dependencies": {
+    "polymer": "^1.0.0",
+    "paper-input": "^2.2.2",
+    "paper-button": "^2.1.1"
+  }
+}

@@ -1,0 +1,101 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<link rel="import" href="../../bower_components/tekton-login/tekton-login.html">
+<link rel="import" href="../../bower_components/tekton-admin/tekton-admin.html">
+<link rel="import" href="../../bower_components/tekton-user/tekton-user.html">
+<link rel="import" href="../../bower_components/tekton-universe-selector/tekton-universe-selector.html">
+
+<dom-module id="tekton-container">
+    <template>
+        <style>
+            #container {
+                border: 1px black solid;
+                border-radius: 30px;
+                background: lightcyan;
+                height: 400px;
+                width: 650px;
+                position: relative;
+            }
+
+            #signOut {
+                border: 1px black solid;
+                border-radius: 35px;
+                background: white;
+                width: 120px;
+                position: absolute;
+                right: 5px;
+                top: 8px;
+            }
+
+            #login {
+
+            }
+
+            #admin {
+                display: none;
+            }
+
+            #user {
+                display: none;
+            }
+
+            #universeSelector {
+                display: none;
+            }
+
+        </style>
+
+        <div id="container">
+            <template is="dom-if" if="[[canSignOut]]">
+                <paper-button id = "signOut" on-tap="signOut">Sign Out</paper-button>
+            </template>
+
+            <tekton-login id = "login"></tekton-login>
+            <tekton-admin id = "admin"></tekton-admin>
+            <tekton-user id = "user"></tekton-user>
+            <tekton-universe-selector id="universeSelector"></tekton-universe-selector>
+
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: "tekton-container",
+
+            properties: {
+                canSignOut: {
+                    type: Boolean,
+                    notify: false,
+                    value: false
+                },
+
+                canBackUp: {
+                    type: Boolean,
+                    notify: false
+                }
+            },
+
+            listeners: {
+                'admin-signed-in': 'toggleLogin',
+                'user-signed-in': 'toggleUserSignedIn'
+            },
+
+            toggleLogin: function() {
+                this.$$('#login').style.display = "none";
+                this.$$('#admin').style.display = "block";
+            },
+
+            toggleUserSignedIn: function () {
+                this.$$('#login').style.display = "none";
+                this.$$('#user').style.display = "block";
+            },
+
+            signOut: function(e) {
+                e.srcElement.style.display = "none";
+                this.$$('#login').style.display = "block";
+            }
+
+        });
+    </script>
+</dom-module>

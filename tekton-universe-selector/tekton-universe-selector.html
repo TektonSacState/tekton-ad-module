@@ -1,0 +1,124 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/paper-toast/paper-toast.html">
+<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid-column.html">
+
+<dom-module id="tekton-universe-selector">
+    <template>
+        <style is="custom-style">
+            #title {
+                text-align: center;
+            }
+
+            #signOut {
+                border: 1px black solid;
+                border-radius: 35px;
+                background: white;
+                width: 120px;
+                position: absolute;
+                right: 5px;
+                top: 8px;
+            }
+
+            #next {
+                border: 1px black solid;
+                border-radius: 35px;
+                background: white;
+                width: 80px;
+                position: absolute;
+                right: 5px;
+                bottom: 8px;
+            }
+
+            #universeGrid {
+                height: 280px;
+                width: 250px;
+                position: absolute;
+                left: 200px;
+            }
+
+            vaadin-grid {
+                --vaadin-grid-body-row-hover-cell: {
+                    background-color: #a0dce6;
+                    cursor: pointer;
+                };
+
+                --vaadin-grid-body-row-active-cell: {
+                    background-color: #bcbcbc;
+                };
+            }
+
+            #toast {
+                --paper-toast-background-color: red;
+                --paper-toast-color: white;
+            }
+
+        </style>
+
+        <paper-button id = "signOut" on-tap="closeUniverseSelection">Sign Out</paper-button>
+
+        <h1 id = "title">Universe Selection</h1>
+
+            <vaadin-grid id="universeGrid" items='[[universes]]'>
+                <vaadin-grid-column width="42px" flex-grow="0">
+                    <template class="header">#</template>
+                    <template>[[plusOne(index)]]</template>
+                </vaadin-grid-column>
+
+                <vaadin-grid-column flex-grow="1">
+                    <template class="header">Universe</template>
+                    <template>[[item.name]]</template>
+                </vaadin-grid-column>
+            </vaadin-grid>
+
+        <paper-button id="next" on-tap="openVendorSelector">Next</paper-button>
+
+        <paper-toast id="toast" text="Please Select A Universe"></paper-toast>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "tekton-universe-selector",
+
+            properties: {
+                universes: {
+                    type: Array,
+                    notify: false,
+                    value: [{"name": "Universe #1"},
+                            {"name": "Universe #2"},
+                            {"name": "Universe #3"},
+                            {"name": "Universe #4"},
+                            {"name": "Universe #5"},
+                            {"name": "Universe #6"},
+                            {"name": "Universe #7"},
+                            {"name": "Universe #8"},
+                            {"name": "Universe #9"},
+                            {"name": "Universe #10"}]
+                }
+            },
+
+            closeUniverseSelection: function() {
+                this.fire('sign-out-tapped');
+            },
+
+            plusOne: function (index) {
+                if (index === null || index === undefined) {
+                    return 0;
+                }
+                return index + 1;
+            },
+
+            openVendorSelector: function() {
+                if (this.$.universeGrid.activeItem !== null) {
+                    this.fire('next-tapped');
+                } else {
+                    this.$.toast.open();
+                }
+
+            }
+        });
+    </script>
+</dom-module>

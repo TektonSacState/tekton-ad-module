@@ -1,0 +1,160 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="tekton-ad-selector">
+    <template>
+        <style>
+            #menu {
+                display: flex;
+                margin: 5%;
+                margin-top: 8%;
+            }
+
+            #outerAdSelector {
+                border-right: 1px black solid;
+                position: relative;
+                height: 75%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+
+            #adSelector {
+                width: 293px;
+                position: relative;
+                bottom: 5%;
+            }
+
+            #createAd {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                margin-left: 12%;
+            }
+
+            #createAdButton {
+                border: 1px black solid;
+                border-radius: 35px;
+                background: white;
+                width: 160px;
+                display: flex;
+                position: relative;
+                bottom: 30px;
+            }
+
+            #adGrid {
+                height: 200px;
+                width: 200px;
+                position: relative;
+                left: 30px;
+                bottom: 30px;
+            }
+
+            #select {
+                text-align: center;
+                position: relative;
+                bottom: 20px;
+                right: 15px;
+            }
+
+            #create {
+                text-align: center;
+                position: relative;
+                bottom: 118px;
+            }
+
+            #submit {
+                border: 1px black solid;
+                border-radius: 35px;
+                background: white;
+                width: 100px;
+                display: flex;
+                position: absolute;
+                left: 80px;
+                top: 250px;
+            }
+
+            vaadin-grid {
+                --vaadin-grid-body-row-hover-cell: {
+                    background-color: #a0dce6;
+                    cursor: pointer;
+                };
+
+                --vaadin-grid-body-row-active-cell: {
+                    background-color: #bcbcbc;
+                };
+            }
+
+        </style>
+
+        <div id = "menu">
+            <div id="outerAdSelector">
+
+                <div id = "adSelector">
+                    <h2 id="select">Select</h2>
+
+                    <vaadin-grid id="adGrid" items='[[ads]]'>
+                        <vaadin-grid-column width="42px" flex-grow="0">
+                            <template class="header">#</template>
+                            <template>[[plusOne(index)]]</template>
+                        </vaadin-grid-column>
+
+                        <vaadin-grid-column flex-grow="1">
+                            <template class="header">Ad</template>
+                            <template>[[item.name]]</template>
+                        </vaadin-grid-column>
+                    </vaadin-grid>
+
+                    <paper-button id="submit" on-tap="finishAd">Submit</paper-button>
+
+                </div>
+            </div>
+
+            <div id = "createAd">
+                <h2 id="create">Create</h2>
+                <paper-button id="createAdButton" on-tap="createAd">Create Ad</paper-button>
+            </div>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "tekton-ad-selector",
+
+            properties: {
+                ads: {
+                    type: Array,
+                    notify: false,
+                    value: [{"name": "Ad #1"},
+                            {"name": "Ad #2"},
+                            {"name": "Ad #3"},
+                            {"name": "Ad #4"},
+                            {"name": "Ad #5"},
+                            {"name": "Ad #6"},
+                            {"name": "Ad #7"},
+                            {"name": "Ad #8"},
+                            {"name": "Ad #9"},
+                            {"name": "Ad #10"}]
+                }
+            },
+
+            finishAd: function() {
+                this.fire('submit-tapped');
+            },
+
+            createAd: function() {
+                this.fire('create-ad-tapped');
+            },
+
+            plusOne: function (index) {
+                if (index === null || index === undefined) {
+                    return 0;
+                }
+                return index + 1;
+            }
+        });
+    </script>
+</dom-module>

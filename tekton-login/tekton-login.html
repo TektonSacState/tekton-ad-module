@@ -1,0 +1,65 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="tekton-login">
+    <template>
+        <style>
+            #userName {
+                width: 300px;
+                margin: 0 auto;
+            }
+
+            #password {
+                width: 300px;
+                margin: 0 auto;
+            }
+
+            #signIn {
+                border: 1px black solid;
+                margin-top: 5%;
+                position: relative;
+                left: calc(50% - 45px);
+                background: #f6f6f6;
+            }
+
+            #title {
+                text-align: center;
+            }
+
+            #login {
+                margin-top: 7%;
+            }
+
+        </style>
+
+        <h1 id = "title">Ad Module</h1>
+
+        <div id = "login">
+            <paper-input id="userName" label="Username"></paper-input>
+            <paper-input id="password" label="Password" type="password"></paper-input>
+            <paper-button id="signIn" on-tap="openUser">Sign In</paper-button>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+           is: "tekton-login",
+
+           properties: {
+
+           },
+
+           openAdmin: function() {
+               this.fire('admin-signed-in');
+           },
+
+           openUser: function() {
+               this.$$('#userName').value = null;
+               this.$$('#password').value = null;
+               this.fire('user-signed-in');
+           }
+        });
+    </script>
+</dom-module>
