@@ -1,0 +1,52 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/tekton-container/tekton-container.html">
+
+<dom-module id="tekton-dashboard">
+    <template>
+        <style>
+            :host {
+                position: relative;
+                height: 100%;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #container {
+                position: relative;
+                bottom: 60px;
+            }
+
+        </style>
+
+            <tekton-container id="container"></tekton-container>
+    </template>
+
+    <script>
+        Polymer({
+            is: "tekton-dashboard",
+
+            properties: {
+
+            },
+
+            listeners: {
+                'send-universe-tapped': 'toggleUniverseSelection',
+                'back-tapped': 'backUniverseSelection',
+                'sign-out-tapped': 'signOut'
+            },
+
+            toggleUniverseSelection: function() {
+                this.$$('#user').style.display = "none";
+                this.$$('#universeSelector').style.display = "block";
+            },
+
+            backUniverseSelection: function() {
+                this.$$('#universeSelector').style.display = "none";
+                this.$$('#user').style.display = "block";
+            }
+        });
+    </script>
+</dom-module>
