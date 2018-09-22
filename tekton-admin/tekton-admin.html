@@ -1,0 +1,107 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="../../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+
+<link rel="import" href="./tekton-item.html">
+
+<dom-module id="tekton-admin">
+    <template>
+        <style>
+            #title {
+                margin-left: 30px;
+            }
+
+            #dataSelection {
+                display: flex;
+                margin: 5%;
+            }
+
+            #userSelection {
+                height: 40px;
+                position: absolute;
+                left: 15%;
+            }
+
+            #adSelection {
+                height: 40px;
+                position: absolute;
+                right: 15%;
+            }
+
+            #dateSectionTitle {
+                position: absolute;
+                left: 30px;
+                top: 165px;
+            }
+
+            #fromDate {
+                height: 40px;
+                position: absolute;
+                top: 220px;
+                left: 15%;
+            }
+
+            #toDate {
+                height: 40px;
+                position: absolute;
+                top: 220px;
+                right: 15%;
+            }
+
+            #impressions {
+                position: absolute;
+                top: 330px;
+                left: 260px;
+            }
+
+        </style>
+
+        <h2 id = "title">Dev Portal</h2>
+
+        <div id = "dataSelection">
+            <vaadin-combo-box id="userSelection" label="User:" items = "[[users]]">
+                <!--<template>
+                    <tekton-item item="[[item]]"></tekton-item>
+                </template>-->
+            </vaadin-combo-box>
+
+            <vaadin-combo-box id="adSelection" label="Ad:" items = "[[ads]]">
+                <!--<template>
+                    <tekton-item item="[[item]]"></tekton-item>
+                </template>-->
+            </vaadin-combo-box>
+        </div>
+
+        <h4 id = "dateSectionTitle">Date Range:</h4>
+
+        <div id = "dateSelection">
+            <vaadin-date-picker id = "fromDate" label = "From:"></vaadin-date-picker>
+            <vaadin-date-picker id = "toDate" label = "To:"></vaadin-date-picker>
+        </div>
+
+        <h4 id = "impressions">Impressions: 1043</h4>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "tekton-admin",
+
+            properties: {
+                users: {
+                    type: Array,
+                    value: ["Aaron", "Luke", "Luis", "Ryan", "EJ", "David", "Jake"],
+                    notify: false
+                },
+
+                ads: {
+                    type: Array,
+                    value: ["Ad #1", "Ad #2", "Ad #3", "Ad #4", "Ad #5"],
+                    notify: false
+                }
+            }
+        });
+    </script>
+</dom-module>

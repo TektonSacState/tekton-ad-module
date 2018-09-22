@@ -1,0 +1,15 @@
+{
+  "name": "tekton-ad-manager",
+  "homepage": "https://github.com/TektonSacState/tekton-ad-manager",
+  "authors": [
+    "Jacob Bender <jdbender64@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "dependencies": {
+    "polymer": "^1.7.0",
+    "paper-card": "PolymerElements/paper-card#^2.1.0",
+    "paper-button": "^2.1.3"
+  }
+}

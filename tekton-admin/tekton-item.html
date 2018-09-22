@@ -1,0 +1,25 @@
+<dom-module id="tekton-item">
+    <template>
+        <style>
+            span {
+                padding: 100% 100% 100% 0;
+            }
+
+            span:hover {
+                cursor: pointer;
+                background: #a0dce6;
+                color: white;
+            }
+
+        </style>
+
+        <span>[[item]]</span>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'tekton-item',
+            properties: {item: Object}
+        });
+    </script>
+</dom-module>

@@ -1,0 +1,53 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="tekton-ad-card">
+    <template>
+        <style>
+            paper-card {
+                margin-top: 5%;
+            }
+
+            .card-heading {
+                width: 320px;
+            }
+
+            .card-content, .card-heading {
+                background: #42e5f4;
+            }
+
+            .card-actions {
+                background: white;
+            }
+        </style>
+
+        <paper-card heading="[[title]]" class="card-heading">
+            <div class="card-content">[[content]]</div>
+            <div class="card-actions">
+                <paper-button>Edit</paper-button>
+                <paper-button>Delete</paper-button>
+                <paper-button>Publish</paper-button>
+            </div>
+        </paper-card>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "tekton-ad-card",
+
+            properties: {
+                title: {
+                    type: String,
+                    notify: false
+                },
+
+                content: {
+                    type: String,
+                    notify: false
+                }
+            }
+        });
+    </script>
+</dom-module>
