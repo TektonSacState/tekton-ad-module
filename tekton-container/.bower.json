@@ -32,5 +32,14 @@
     "webcomponentsjs": "^v1.1.0",
     "paper-button": "^1.0.6",
     "paper-input": "^1.1.5"
-  }
+  },
+  "_release": "7511bd81b9",
+  "_resolution": {
+    "type": "branch",
+    "branch": "test-branch",
+    "commit": "7511bd81b93998859d2ae7fb225b9550f740f85c"
+  },
+  "_source": "git@github.com:TektonSacState/tekton-container.git",
+  "_target": "test-branch",
+  "_originalSource": "git@github.com:TektonSacState/tekton-container.git"
 }

@@ -1,10 +1,15 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
 <link rel="import" href="../tekton-login/tekton-login.html">
 <link rel="import" href="../tekton-admin/tekton-admin.html">
 <link rel="import" href="../tekton-user/tekton-user.html">
 <link rel="import" href="../tekton-universe-selector/tekton-universe-selector.html">
+<link rel="import" href="../tekton-vendor-selector/tekton-vendor-selector.html">
+<link rel="import" href="../tekton-ad-selector/tekton-ad-selector.html">
+<link rel="import" href="../tekton-ad-creator/tekton-ad-creator.html">
+<link rel="import" href="../tekton-ad-manager/tekton-ad-manager.html">
 
 <dom-module id="tekton-container">
     <template>
@@ -28,20 +33,26 @@
                 top: 8px;
             }
 
-            #login {
-
+            #back {
+                border: 1px black solid;
+                border-radius: 35px;
+                background: white;
+                width: 80px;
+                position: absolute;
+                left: 5px;
+                bottom: 8px;
             }
 
-            #admin {
-                display: none;
+            #done {
+                position: relative;
+                top: 150px;
+                left: 300px;
             }
 
-            #user {
-                display: none;
-            }
-
-            #universeSelector {
-                display: none;
+            #submitted {
+                position: relative;
+                top: 190px;
+                left: 165px;
             }
 
         </style>
@@ -51,10 +62,24 @@
                 <paper-button id = "signOut" on-tap="signOut">Sign Out</paper-button>
             </template>
 
-            <tekton-login id = "login"></tekton-login>
-            <tekton-admin id = "admin"></tekton-admin>
-            <tekton-user id = "user"></tekton-user>
-            <tekton-universe-selector id="universeSelector"></tekton-universe-selector>
+            <iron-pages id="pages" selected="0">
+                <tekton-login id = "login"></tekton-login>
+                <tekton-admin id = "admin"></tekton-admin>
+                <tekton-user id = "user"></tekton-user>
+                <tekton-universe-selector id="universeSelector"></tekton-universe-selector>
+                <tekton-vendor-selector id="vendorSelector"></tekton-vendor-selector>
+                <tekton-ad-selector id="adSelector"></tekton-ad-selector>
+                <tekton-ad-creator id="adCreator"></tekton-ad-creator>
+                <tekton-ad-manager id="adManager"></tekton-ad-manager>
+                <div id="finished">
+                    <b id="done">Done!</b>
+                    <b id="submitted">Universe submitted to Facebook.</b>
+                </div>
+            </iron-pages>
+
+            <template is="dom-if" if="[[canGoBack]]">
+                <paper-button id="back" on-tap="goBack">Back</paper-button>
+            </template>
 
         </div>
     </template>
@@ -70,30 +95,93 @@
                     value: false
                 },
 
-                canBackUp: {
+                canGoBack: {
                     type: Boolean,
-                    notify: false
+                    notify: false,
+                    value: false
                 }
             },
 
             listeners: {
                 'admin-signed-in': 'toggleLogin',
-                'user-signed-in': 'toggleUserSignedIn'
+                'user-signed-in': 'toggleUser',
+                'universe-selector-tapped': 'toggleUniverseSelector',
+                'back-user-tapped': 'toggleUser',
+                'next-tapped': 'toggleVendorSelector',
+                'logo-tapped': 'toggleAdSelector',
+                'submit-tapped': 'toggleFinished',
+                'create-ad-tapped': 'toggleCreateAd',
+                'ad-creator-button-tapped': 'toggleAdSelector',
+                'manage-ads-tapped': 'toggleAdManager',
+                'sign-out-tapped': 'signOut'
             },
 
             toggleLogin: function() {
-                this.$$('#login').style.display = "none";
-                this.$$('#admin').style.display = "block";
+                this.$$('#pages').selected = "1";
+                this.canSignOut = true;
+                this.canGoBack = false;
             },
 
-            toggleUserSignedIn: function () {
-                this.$$('#login').style.display = "none";
-                this.$$('#user').style.display = "block";
+            toggleUser: function() {
+                this.$$('#pages').selected = "2";
+                this.canSignOut = true;
+                this.canGoBack = false;
             },
 
-            signOut: function(e) {
-                e.srcElement.style.display = "none";
-                this.$$('#login').style.display = "block";
+            toggleUniverseSelector: function() {
+                this.$$('#pages').selected = "3";
+                this.canSignOut = true;
+                this.canGoBack = true;
+            },
+
+            toggleVendorSelector: function() {
+                this.$$('#pages').selected = "4";
+                this.canSignOut = true;
+                this.canGoBack = true;
+            },
+
+            toggleAdSelector: function() {
+                this.$$('#pages').selected = "5";
+                this.canSignOut = true;
+                this.canGoBack = true;
+            },
+
+            toggleCreateAd: function() {
+                this.$$('#pages').selected = "6";
+                this.canSignOut = true;
+                this.canGoBack = false;
+            },
+
+            toggleAdManager: function() {
+                this.$$('#pages').selected = "7";
+                this.canSignOut = true;
+                this.canGoBack = true;
+            },
+
+            toggleFinished: function() {
+                this.$$('#pages').selected = "8";
+                this.canSignOut = true;
+                this.canGoBack = true;
+            },
+
+            goBack: function() {
+                var page = this.$$('#pages').selected;
+
+                if (page === "3" || page === "7" || page === "8") {
+                    this.$$('#pages').selected = "2";
+                    this.canGoBack = false;
+                } else if (page === "4") {
+                    this.$$('#pages').selected = "3";
+                } else if (page === "5") {
+                    this.$$('#pages').selected = "4";
+                }
+
+            },
+
+            signOut: function() {
+                this.$$('#pages').selected = "0";
+                this.canSignOut = false;
+                this.canGoBack = false;
             }
 
         });
