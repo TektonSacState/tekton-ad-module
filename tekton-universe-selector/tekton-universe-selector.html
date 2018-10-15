@@ -10,33 +10,42 @@
         <style is="custom-style">
             #title {
                 text-align: center;
+    		font-family: arial;
+    		font-size: 25;
+    		color: #484848;
             }
 
             #signOut {
-                border: 1px black solid;
-                border-radius: 35px;
-                background: white;
-                width: 120px;
-                position: absolute;
-                right: 5px;
-                top: 8px;
+                border: 1px #adadad solid;
+    		border-radius: 3px;
+    		background: white;
+    		width: 120px;
+    		position: absolute;
+    		right: 5px;
+    		top: 11px;
+		color: #525252;
             }
 
             #next {
-                border: 1px black solid;
-                border-radius: 35px;
-                background: white;
-                width: 80px;
-                position: absolute;
-                right: 5px;
-                bottom: 8px;
+    		border-radius: 3px;
+    		background: white;
+    		background-color: #8AB05B;
+    		color: white;
+    		width: 110px;
+    		height: 100px;
+    		position: absolute;
+    		right: 20px;
+    		bottom: 110px;
+    		font-size: 50px;
+   		min-width: 1em;
             }
 
             #universeGrid {
-                height: 280px;
-                width: 250px;
-                position: absolute;
-                left: 200px;
+                height: 275px;
+    		width: 250px;
+    		position: absolute;
+    		left: 175px;
+		font-family: Arial;
             }
 
             vaadin-grid {
@@ -59,7 +68,7 @@
 
         <paper-button id = "signOut" on-tap="closeUniverseSelection">Sign Out</paper-button>
 
-        <h1 id = "title">Universe Selection</h1>
+        <h1 id = "title">Select Universe</h1>
 
             <vaadin-grid id="universeGrid" items='[[universes]]'>
                 <vaadin-grid-column width="42px" flex-grow="0">
@@ -73,7 +82,7 @@
                 </vaadin-grid-column>
             </vaadin-grid>
 
-        <paper-button id="next" on-tap="openVendorSelector">Next</paper-button>
+        <paper-button id="next" on-tap="openVendorSelector">»</paper-button>
 
         <paper-toast id="toast" text="Please Select A Universe"></paper-toast>
 

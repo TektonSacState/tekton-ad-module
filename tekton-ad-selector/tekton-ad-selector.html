@@ -13,18 +13,20 @@
             }
 
             #outerAdSelector {
-                border-right: 1px black solid;
-                position: relative;
-                height: 75%;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
+                border-right: 1px #888888 solid;
+    		position: relative;
+    		height: 75%;
+    		display: flex;
+    		flex-direction: column;
+    		justify-content: center;
             }
 
             #adSelector {
                 width: 293px;
-                position: relative;
-                bottom: 5%;
+    		position: relative;
+    		top: 15px;
+    		left: 10px;
+    		font-family: Arial;
             }
 
             #createAd {
@@ -35,13 +37,13 @@
             }
 
             #createAdButton {
-                border: 1px black solid;
-                border-radius: 35px;
-                background: white;
-                width: 160px;
-                display: flex;
-                position: relative;
-                bottom: 30px;
+    		border-radius: 3px;
+    		background: #5b9fb0;
+    		color: white;
+    		width: 160px;
+    		display: flex;
+    		position: relative;
+    		right: 10px;
             }
 
             #adGrid {
@@ -66,14 +68,14 @@
             }
 
             #submit {
-                border: 1px black solid;
-                border-radius: 35px;
-                background: white;
-                width: 100px;
-                display: flex;
-                position: absolute;
-                left: 80px;
-                top: 250px;
+    		border-radius: 3px;
+    		background: #8AB05B;
+    		color: white;
+    		width: 160px;
+    		display: flex;
+    		position: absolute;
+    		left: 45px;
+    		bottom: -30px;
             }
 
             vaadin-grid {
@@ -93,7 +95,6 @@
             <div id="outerAdSelector">
 
                 <div id = "adSelector">
-                    <h2 id="select">Select</h2>
 
                     <vaadin-grid id="adGrid" items='[[ads]]'>
                         <vaadin-grid-column width="42px" flex-grow="0">
@@ -107,13 +108,12 @@
                         </vaadin-grid-column>
                     </vaadin-grid>
 
-                    <paper-button id="submit" on-tap="finishAd">Submit</paper-button>
+                    <paper-button id="submit" on-tap="finishAd">Select Ad</paper-button>
 
                 </div>
             </div>
 
             <div id = "createAd">
-                <h2 id="create">Create</h2>
                 <paper-button id="createAdButton" on-tap="createAd">Create Ad</paper-button>
             </div>
         </div>
