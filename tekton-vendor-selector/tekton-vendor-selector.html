@@ -19,7 +19,7 @@
             }
 
             #facebookLogo {
-                margin-right: 20%;
+                //margin-right: 20%;
                 border-radius: 5px;
                 background: white;
             }
@@ -45,14 +45,24 @@
                 cursor: pointer;
             }
 
+			paper-button {
+				border: 1px #adadad solid;
+				border-radius: 5px;
+				background: white;
+			}
+
         </style>
 
         <h1 id = "title">Vendor Selection</h1>
 
         <div id="logos">
-            <img id="facebookLogo" src="logos/facebook-icon.png" on-tap="openAdSelector" alt="Facebook" height="42" width="42">
-            <google-signin id="googleLogo" label-signin="Sign-in" client-id="[[clientId]]" scopes="https://www.googleapis.com/auth/drive"></google-signin>
-            <img id="twitterLogo" src="logos/twitter-logo.png" on-tap="openAdSelector" alt="Twitter" height="42" width="42">
+			<img id="facebookLogo" src="logos/facebook-icon.png" on-tap="fbButtonLogin" alt="Facebook" height="42" width="42">
+            <!--<google-signin id="googleLogo" label-signin="Sign-in" client-id="[[clientId]]" scopes="https://www.googleapis.com/auth/drive"></google-signin>-->
+            <!--<img id="twitterLogo" src="logos/twitter-logo.png" on-tap="openAdSelector" alt="Twitter" height="42" width="42">-->
+			<paper-button id="getAdAccountsBtn" on-tap="getAdAccounts">Get Ad Accounts</paper-button>
+			<paper-button id="getAdAudiencesBtn" on-tap="getAdAudiences">Get Facebook Audiences</paper-button>
+			<paper-button id="postTestAudienceBtn" on-tap="postTestAudience">Post Test Audience</paper-button>
+			<paper-button id="postTestAudienceDetailsBtn" on-tap="postTestAudienceDetails">Post Test Audience Details</paper-button>
         </div>
 
     </template>
@@ -69,10 +79,259 @@
                 }
             },
 
+			ready: function() {
+				// Setting up Facebook SDK and required callbacks
+				window.fbAsyncInit = function() {
+					FB.init({
+						appId      : '265669694079249',
+						cookie     : true,
+						xfbml      : true,
+						version    : 'v3.1'
+					});
+
+					FB.AppEvents.logPageView();
+
+					//FIXME: I can't call getLoinStatus here without getting the
+					// 		x-frame error on the console
+					//FB.getLoginStatus(function(response) {
+					//	console.log("getLoginStatus: ");
+					//	console.log(response);
+					//});
+
+					//FIXME: even calling the external version yields the same error
+					//externFBGetLoginStatus();
+				};
+
+				(function(d, s, id){
+					var js, fjs = d.getElementsByTagName(s)[0];
+					if (d.getElementById(id)) {return;}
+					js = d.createElement(s); js.id = id;
+					js.src = "https://connect.facebook.net/en_US/sdk.js";
+					fjs.parentNode.insertBefore(js, fjs);
+				}(document, 'script', 'facebook-jssdk'));
+			},
+
+			fbCheckLoginStatus: function() {
+				console.log("Check login status: ");
+				FB.getLoginStatus(function(response) {console.log("hullo");});
+			},
+
+			checkLoginState: function() {
+				console.log("Check login state called");
+			},
+
             openAdSelector: function() {
                 this.fire('logo-tapped');
-            }
+            },
 
-        });
+			fbButtonLogin: function() {
+				var curAuthToken = document.querySelector("tekton-container").userFBAccountAccessToken;
+				// If the user already has an auth-token, don't let them request another
+				if(curAuthToken === "none")
+				{
+					FB.login(function(response) {
+						if(response.authResponse) {
+							//App is authorized
+							console.log("We have an auth response.");
+
+							// Store the User's user account access token
+							var authToken = response.authResponse.accessToken;
+							document.querySelector("tekton-container").userFBAccountAccessToken = authToken;
+							// Store the User's account ID
+							var accountID = response.authResponse.userID;
+							document.querySelector("tekton-container").userFBAccountID = accountID;
+
+							// Advance to the next page
+							//document.querySelector("tekton-vendor-selector").openAdSelector();
+							//externFBButtonLoginCallback();
+						}
+						console.log(response);
+					}, {scope: 'ads_management,ads_read', return_scopes: true});
+					// for more info on permissions: https://developers.facebook.com/docs/facebook-login/permissions/
+				}
+				else
+				{
+					// We already have an auth-token, continue.
+					this.openAdSelector();
+				}
+			},
+
+			getAdAccounts: function() {
+				var userAccountID = document.querySelector("tekton-container").userFBAccountID;
+				var userAccessToken = document.querySelector("tekton-container").userFBAccountAccessToken;
+				var accountID = userAccountID;
+				var accessToken = userAccessToken;
+
+				const httpRequest = new XMLHttpRequest();
+				httpRequest.open("GET","https://graph.facebook.com/v3.1/" + userAccountID + "/adaccounts?access_token=" + accessToken);
+				httpRequest.send();
+
+
+				httpRequest.onreadystatechange=(e)=>
+				{
+					// If the httpRequest state is DONE (4)
+					if(httpRequest.readyState == 4)
+					{
+						console.log("getAdAccounts response: ");
+						console.log("~~~~~~~~~~~~~~~~~~~~~~~~");
+						console.log(httpRequest.responseText);
+
+						// JSONifying the response:
+						var data = JSON.parse(httpRequest.responseText);
+						console.log(data);
+
+						// Make sure they have at least one ad account
+						var adAccounts = data.data;
+						if(adAccounts.length > 0)
+						{
+							var adAccountID = adAccounts[0].account_id;
+							// Store Ad Account ID
+							document.querySelector("tekton-container").userFBAdAccountID = adAccountID;
+						}
+						else
+						{
+							console.log("User does not have any ad accounts!");
+						}
+						console.log("~~~~~~~~~~~~~~~~~~~~~~~~");
+
+						// Setting the button to green
+						var btnID = "getAdAccountsBtn";
+						var newStyle = "color: white; background-color: #8AB05B; border: none;";
+						var oldStyle = document.getElementById(btnID).getAttribute("style");
+						document.getElementById(btnID).setAttribute("style", newStyle);
+					}
+				}
+
+			},
+			getAdAudiences: function() {
+				var userAccessToken = document.querySelector("tekton-container").userFBAccountAccessToken;
+				var userAdAccountID = document.querySelector("tekton-container").userFBAdAccountID;
+				var accessToken = userAccessToken;
+				var adAccountID = userAdAccountID;
+
+				const httpRequest = new XMLHttpRequest();
+				httpRequest.open("GET","https://graph.facebook.com/v3.2/act_" + adAccountID + "/customaudiences?access_token=" + accessToken);
+				httpRequest.send();
+
+				httpRequest.onreadystatechange=(e)=>
+				{
+					// If the httpRequest state is DONE (4)
+					if(httpRequest.readyState == 4)
+					{
+						console.log("get Ad Audiences response: ");
+						console.log("~~~~~~~~~~~~~~~~~~~~~~~~");
+						console.log(httpRequest.responseText);
+
+						if(httpRequest.responseText)
+						{
+							// JSONifying the response:
+							var data = JSON.parse(httpRequest.responseText);
+							console.log(data);
+							// Printing the ID
+							for(var i = 0; i < data.data.length; i++)
+							{
+								console.log("Got Custom Audience " + i + ", ID = " + data.data[0].id);
+							}
+
+							// Setting the button to green
+							var btnID = "getAdAudiencesBtn";
+							var newStyle = "color: white; background-color: #8AB05B; border: none;";
+							var oldStyle = document.getElementById(btnID).getAttribute("style");
+							document.getElementById(btnID).setAttribute("style", newStyle);
+						}
+
+						console.log("~~~~~~~~~~~~~~~~~~~~~~~~");
+					}
+				}
+			},
+			postTestAudience: function() {
+				var userAccessToken = document.querySelector("tekton-container").userFBAccountAccessToken;
+				var userAdAccountID = document.querySelector("tekton-container").userFBAdAccountID;
+				var accessToken = userAccessToken;
+				var adAccountID = userAdAccountID;
+
+				const httpRequest = new XMLHttpRequest();
+				httpRequest.open("POST","https://graph.facebook.com/v3.2/act_" + adAccountID + "/customaudiences");
+				var formData = new FormData();
+				formData.append('name','Custom API Audience 1');
+				formData.append('subtype','CUSTOM');
+				formData.append("description","API-created Custom Audience");
+				formData.append("customer_file_source","USER_PROVIDED_ONLY");
+				formData.append("access_token",userAccessToken);
+				httpRequest.send(formData);
+
+				httpRequest.onreadystatechange=(e) => {
+					// If the httpRequest state is DONE (4)
+					if(httpRequest.readyState == 4) {
+						console.log("Post Test Audience response: ");
+						console.log("~~~~~~~~~~~~~~~~~~~~~~~~");
+						console.log(httpRequest.responseText);
+						if(httpRequest.responseText) {
+							// JSONifying the response:
+							var data = JSON.parse(httpRequest.responseText);
+							console.log(data);
+
+							if(data.data)
+							{
+								// Setting the button to green
+								var btnID = "postTestAudienceBtn";
+								var newStyle = "color: white; background-color: #8AB05B; border: none;";
+								var oldStyle = document.getElementById(btnID).getAttribute("style");
+								document.getElementById(btnID).setAttribute("style", newStyle);
+							}
+							else if(data.error)
+							{
+								// Setting the button to green
+								var btnID = "postTestAudienceBtn";
+								var newStyle = "color: white; background-color: #CC0000; border: none;";
+								var oldStyle = document.getElementById(btnID).getAttribute("style");
+								document.getElementById(btnID).setAttribute("style", newStyle);
+							}
+
+						}
+						console.log("~~~~~~~~~~~~~~~~~~~~~~~~");
+					}
+				}
+			},
+			// This function sends info for a test audience
+			postTestAudienceDetails: function() {
+				/*curl \
+					-F 'payload={
+						"schema": ["EMAIL","MADID","APPUID"],
+						"app_ids": ["<APP_ID>"],
+						"data": [
+							["b36a83701f1c3191e19722d6f90274bc1b5501fe69ebf33313e440fe4b0fe210","1234567890","6032d997-3ab0-4de0-aa16-8af0e5b482fb"],
+							["2b3b2b9ce842ab8b6a6c614cb1f9604bb8a0d502d1af49c526b72b10894e95b5","","B67385F8-9A82-4670-8C0A-6F9EA7513F5F"],
+							[ "898628e28890f937bdf009391def42879c401a4bcf1b5fd24e738d9f5da8cbbb","9876543210",""]
+						]
+					}' \
+					-F 'access_token=<ACCESS_TOKEN>' \
+					https://graph.facebook.com/v2.11/<CUSTOM_AUDIENCE_ID>/users*/
+			}
+		});
+
+		// When calling a function from a Facebook API callback function,
+		// We need to create functions outside of polymer for FB to reference:
+		// This function then can call internal polymer functions.
+		// Functions created in this scope exist in the same scope as anyonymous functions
+		// created as parameters to functions
+		// 		NOTE: this function is no longer needed but is kept as an example of external functions
+		// 		This function was replaced by just calling document.querySelector(...).openAdSelector
+		// 		from within the callback function
+		//function externFBButtonLoginCallback()
+		//{
+		//	document.querySelector("tekton-vendor-selector").openAdSelector();
+		//}
+
+
+		// FIXME Remove this:
+		// I also tried calling FB.getLoginStatus externally and receive the same error
+		//function externFBGetLoginStatus() {
+		//	FB.getLoginStatus(function(response) {
+		//		console.log("getLoginStatus: ");
+		//		console.log(response);
+		//	});
+		//}
+
     </script>
 </dom-module>

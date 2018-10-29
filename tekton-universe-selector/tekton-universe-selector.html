@@ -93,20 +93,17 @@
             is: "tekton-universe-selector",
 
             properties: {
-                universes: {
-                    type: Array,
-                    notify: false,
-                    value: [{"name": "Universe #1"},
-                            {"name": "Universe #2"},
-                            {"name": "Universe #3"},
-                            {"name": "Universe #4"},
-                            {"name": "Universe #5"},
-                            {"name": "Universe #6"},
-                            {"name": "Universe #7"},
-                            {"name": "Universe #8"},
-                            {"name": "Universe #9"},
-                            {"name": "Universe #10"}]
-                }
+				universes: {
+					type: Array,
+					notify: true,
+					value: null
+				},
+				selectedUniverse: {
+					type: String,
+					notify: true,
+					value: null
+				}
+
             },
 
             closeUniverseSelection: function() {
@@ -121,7 +118,10 @@
             },
 
             openVendorSelector: function() {
-                if (this.$.universeGrid.activeItem !== null) {
+				var selectedItem = this.$.universeGrid.activeItem;
+                if (selectedItem !== null) {
+					// Store the selected universe:
+					document.querySelector("tekton-container").selectedUniverse = selectedItem.name;
                     this.fire('next-tapped');
                 } else {
                     this.$.toast.open();

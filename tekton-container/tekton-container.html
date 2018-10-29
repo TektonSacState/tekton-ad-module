@@ -72,7 +72,7 @@
                 <tekton-login id = "login"></tekton-login>
                 <tekton-admin id = "admin"></tekton-admin>
                 <tekton-user id = "user"></tekton-user>
-                <tekton-universe-selector id="universeSelector"></tekton-universe-selector>
+                <tekton-universe-selector id="universeSelector" universes="[[universes]]"></tekton-universe-selector>
                 <tekton-vendor-selector id="vendorSelector"></tekton-vendor-selector>
                 <tekton-ad-selector id="adSelector"></tekton-ad-selector>
                 <tekton-ad-creator id="adCreator"></tekton-ad-creator>
@@ -105,7 +105,51 @@
                     type: Boolean,
                     notify: false,
                     value: false
-                }
+                },
+				universes: {
+                    type: Array,
+                    notify: false,
+                    value: [{"name": "Universe #1","pdi_id": "251234213"},
+                            {"name": "Universe #2","pdi_id": "748192948"},
+                            {"name": "Universe #3","pdi_id": "021952354"},
+                            {"name": "Universe #4","pdi_id": "846182023"},
+                            {"name": "Universe #5","pdi_id": "128743844"},
+                            {"name": "Universe #6","pdi_id": "857483947"},
+                            {"name": "Universe #7","pdi_id": "231758212"},
+                            {"name": "Universe #8","pdi_id": "859321473"},
+                            {"name": "Universe #9","pdi_id": "428834341"},
+                            {"name": "Universe #10","pdi_id": "215214642"}]
+                },
+				selectedUniverse: {
+					type: String,
+					notify: false,
+					value: "none"
+				},
+				userFBAccountAccessToken: {
+					type: Array,
+					notify: true,
+					value: "none"
+				},
+				userFBAccountID: {
+					type: String,
+					notify: true,
+					value: "none"
+				},
+				userFBAdAccountID: {
+					type: String,
+					notify: true,
+					value: "none"
+				},
+				//FIXME - this is a sandbox account test token, how / where do we get this token from actual accounts?
+				userAdAccountAccessToken: {
+					type: Array,
+					notify: true,
+					value: "EAADxoAuZBQREBAPVbt0rw8ZCKrKUMzZAhCjYqBxTi27ONyCtllWvxGD8GZBrKPQNrLGGtnNsr8J6ZClCI6Orw2q4hg6WuZC5AtVx7LT9aSCIe80OteDZC8H03ZCtDdIKm5Qdiu6Oi485SLD5jjgCYujokOeqBpwuvff9zumGnU8BWRLq6bxF6DBRWQDkOnZBde8AenobJsbkAK3jK8TAEeEARDVYRN7a6WtkZD"
+				}
+
+
+
+				//TODO: add in all state variables
             },
 
             listeners: {
