@@ -82,7 +82,7 @@
                 </vaadin-grid-column>
             </vaadin-grid>
 
-        <paper-button id="next" on-tap="openAdSelector">»</paper-button>
+        <paper-button id="next" on-tap="openVendorSelector">»</paper-button>
 
         <paper-toast id="toast" text="Please Select A Universe"></paper-toast>
 
@@ -120,9 +120,9 @@
                 return index + 1;
             },
 
-            openAdSelector: function() {
+            openVendorSelector: function() {
                 if (this.$.universeGrid.activeItem !== null) {
-                    this.fire('logo-tapped');
+                    this.fire('next-tapped');
                 } else {
                     this.$.toast.open();
                 }

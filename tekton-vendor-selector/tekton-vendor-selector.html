@@ -6,9 +6,9 @@
         <style>
             #title {
                 text-align: center;
-    		font-family: arial;
-    		font-size: 25;
-    		color: #484848;
+                font-family: arial;
+                font-size: 25;
+                color: #484848;
             }
 
             #logos {
@@ -19,29 +19,11 @@
             }
 
             #facebookLogo {
-                margin-right: 20%;
                 border-radius: 5px;
                 background: white;
             }
 
             #facebookLogo:hover {
-                cursor: pointer;
-            }
-
-            #googleLogo {
-                margin-right: 20%;
-            }
-
-            #googleLogo:hover {
-                cursor: pointer;
-            }
-
-            #twitterLogo {
-                border-radius: 5px;
-                background: white;
-            }
-
-            #twitterLogo:hover {
                 cursor: pointer;
             }
 
@@ -51,8 +33,6 @@
 
         <div id="logos">
             <img id="facebookLogo" src="logos/facebook-icon.png" on-tap="openAdSelector" alt="Facebook" height="42" width="42">
-            <google-signin id="googleLogo" label-signin="Sign-in" client-id="[[clientId]]" scopes="https://www.googleapis.com/auth/drive"></google-signin>
-            <img id="twitterLogo" src="logos/twitter-logo.png" on-tap="openAdSelector" alt="Twitter" height="42" width="42">
         </div>
 
     </template>
