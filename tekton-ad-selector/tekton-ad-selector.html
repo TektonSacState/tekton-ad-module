@@ -68,25 +68,18 @@
             }
 
             #submit {
-    		border-radius: 3px;
-    		background: #8AB05B;
-    		color: white;
-    		width: 160px;
-    		display: flex;
-    		position: absolute;
-    		left: 45px;
-    		bottom: -30px;
+                border-radius: 3px;
+                background: #8AB05B;
+                color: white;
+                width: 300px;
+                display: flex;
+                margin: 0 auto;
+                position: relative;
+                right: 4px;
             }
 
-            vaadin-grid {
-                --vaadin-grid-body-row-hover-cell: {
-                    background-color: #a0dce6;
-                    cursor: pointer;
-                };
-
-                --vaadin-grid-body-row-active-cell: {
-                    background-color: #bcbcbc;
-                };
+            #newAudience {
+                margin-bottom: 10%;
             }
 
         </style>
@@ -95,19 +88,9 @@
             <div id="outerAdSelector">
                 <div id = "adSelector">
 
-                    <vaadin-grid id="adGrid" items='[[ads]]'>
-                        <vaadin-grid-column width="42px" flex-grow="0">
-                            <template class="header">#</template>
-                            <template>[[plusOne(index)]]</template>
-                        </vaadin-grid-column>
+                    <paper-input label="Facebook Ad Audience Name" id="newAudience"></paper-input>
 
-                        <vaadin-grid-column flex-grow="1">
-                            <template class="header">Ad</template>
-                            <template>[[item.name]]</template>
-                        </vaadin-grid-column>
-                    </vaadin-grid>
-
-                    <paper-button id="submit" on-tap="finishAd">Select Ad</paper-button>
+                    <paper-button id="submit" on-tap="finishAd">Create Facebook Ad Audience</paper-button>
 
                 </div>
 
