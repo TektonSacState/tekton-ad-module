@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>tekton-login test</title>
+
+        <script src="../../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../bower_components/web-component-tester/browser.js"></script>
+
+        <link rel="import" href="../tekton-login.html">
+    </head>
+
+    <body>
+        <test-fixture id="basic">
+            <template>
+                <tekton-login></tekton-login>
+            </template>
+        </test-fixture>
+
+        <script>
+            // To run, create local server, then navigate to
+            // http://localhost:8081/components/tekton-ad-module/tekton-login/test/tekton-login_test.html
+            // View results of test in browser console
+
+            suite('tekton-login', function() {
+               test('creating element works', function() {
+                    var element = fixture('basic');
+                    assert.equal(element.is, 'tekton-login');
+               });
+            });
+        </script>
+    </body>
+</html>
