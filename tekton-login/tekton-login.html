@@ -5,51 +5,57 @@
 <dom-module id="tekton-login">
     <template>
         <style>
-            #userName {
-                width: 300px;
-                margin: 0 auto;
-            }
-
-            #password {
+            .loginInput {
                 width: 300px;
                 margin: 0 auto;
             }
 
             #signIn {
                 border: none;
-    		border-radius: 3px;
-    		background-color: #8AB05B;
-    		margin-top: 5%;
-    		position: relative;
-    		left: calc(50% - 100px);
-    		color: #ffffff;
-    		height: 39px;
-    		width: 200px;
-    		text-transform: uppercase;
-    		text-shadow: none;
-    		font-weight: bold;
-    		font-size: 17px;
-    		font-family: Arial;
+                border-radius: 3px;
+                background-color: #8AB05B;
+                margin-top: 5%;
+                position: relative;
+                left: calc(50% - 100px);
+                color: #ffffff;
+                height: 39px;
+                width: 200px;
+                text-transform: uppercase;
+                text-shadow: none;
+                font-weight: bold;
+                font-size: 17px;
+                font-family: Arial;
             }
 
             #title {
                 text-align: center;
-		padding-top: 40px;
+		        padding-top: 40px;
             }
 
             #login {
                 margin-top: 10px;
             }
 
+            @media only screen and (max-width: 768px) {
+                .loginInput {
+                    width: 250px;
+                    margin: 0 auto;
+                }
+
+                #logo {
+                    width: 80%;
+                }
+            }
+
         </style>
 	
 	<div id = "title">
-        	<img src="https://onlinecampaigntools.com/Content/Images/PDI_logo.png" title="OCC" alt="Online Campaign Center">
+        	<img src="https://onlinecampaigntools.com/Content/Images/PDI_logo.png" id="logo" title="OCC" alt="Online Campaign Center">
 	</div>
 
         <div id = "login">
-            <paper-input id="userName" label="Username"></paper-input>
-            <paper-input id="password" label="Password" type="password"></paper-input>
+            <paper-input id="userName" class="loginInput" label="Username"></paper-input>
+            <paper-input id="password" class="loginInput" label="Password" type="password"></paper-input>
             <paper-button id="signIn" on-tap="openUser">Sign In</paper-button>
         </div>
 
