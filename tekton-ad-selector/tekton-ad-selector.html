@@ -71,37 +71,38 @@
                 border-radius: 3px;
                 background: #8AB05B;
                 color: white;
-                width: 300px;
+                width: 50%;
                 display: flex;
                 margin: 0 auto;
                 position: relative;
-                right: 4px;
             }
 
             #newAudience {
-                margin-bottom: 10%;
+                width: 50%;
+                margin: 15% auto 5% auto;
             }
 
             @media only screen and (max-width: 768px) {
                 #outerAdSelector {
                     border-right: 0;
+                    display: block;
+                }
+
+                #newAudience {
+                    width: 70%;
+                    margin: 35% auto 5% auto;
+                }
+
+                #submit {
+                    width: 90%;
                 }
             }
 
         </style>
 
-        <div id = "menu">
-            <div id="outerAdSelector">
-                <div id = "adSelector">
+        <paper-input label="Facebook Ad Audience Name" id="newAudience"></paper-input>
 
-                    <paper-input label="Facebook Ad Audience Name" id="newAudience"></paper-input>
-
-                    <paper-button id="submit" on-tap="finishAd">Create Facebook Ad Audience</paper-button>
-
-                </div>
-
-            </div>
-        </div>
+        <paper-button id="submit" on-tap="finishAd">Create Facebook Ad Audience</paper-button>
 
     </template>
 
