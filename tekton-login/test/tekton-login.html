@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>tekton-login</title>
+
+        <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+        <script src="../../web-component-tester/browser.js"></script>
+        <script src="../../iron-test-helpers/mock-interactions.js"></script>
+
+        <link rel="import" href="../tekton-login.html">
+    </head>
+
+    <body>
+        <test-fixture id="testLogin">
+            <template>
+                <tekton-login></tekton-login>
+            </template>
+        </test-fixture>
+
+        <script>
+            suite('<tekton-login>', function() {
+                var login;
+
+                setup(function() {
+                    login = fixture('testLogin');
+                });
+
+                test('has required attributes', function() {
+                    expect(login.name).to.be.eql('Jake');
+                });
+            });
+
+        </script>
+    </body>
+</html>

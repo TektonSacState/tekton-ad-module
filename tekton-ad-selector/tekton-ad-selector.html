@@ -13,20 +13,20 @@
             }
 
             #outerAdSelector {
-                border-right: 1px #888888 solid;
-                position: relative;
-                height: 75%;
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
+    		    position: relative;
+    		    height: 75%;
+    		    display: flex;
+    		    flex-direction: column;
+    		    justify-content: center;
+                margin: 0 auto;
             }
 
             #adSelector {
                 width: 293px;
-                position: relative;
-                top: 15px;
-                left: 10px;
-                font-family: Arial;
+    		    position: relative;
+    		    top: 15px;
+    		    left: 10px;
+    		    font-family: Arial;
             }
 
             #createAd {
@@ -71,22 +71,15 @@
                 border-radius: 3px;
                 background: #8AB05B;
                 color: white;
-                width: 160px;
+                width: 300px;
                 display: flex;
-                position: absolute;
-                left: 45px;
-                bottom: -30px;
+                margin: 0 auto;
+                position: relative;
+                right: 4px;
             }
 
-            vaadin-grid {
-                --vaadin-grid-body-row-hover-cell: {
-                    background-color: #a0dce6;
-                    cursor: pointer;
-                };
-
-                --vaadin-grid-body-row-active-cell: {
-                    background-color: #bcbcbc;
-                };
+            #newAudience {
+                margin-bottom: 10%;
             }
 
             @media only screen and (max-width: 768px) {
@@ -99,28 +92,14 @@
 
         <div id = "menu">
             <div id="outerAdSelector">
-
                 <div id = "adSelector">
 
-                    <vaadin-grid id="adGrid" items='[[ads]]'>
-                        <vaadin-grid-column width="42px" flex-grow="0">
-                            <template class="header">#</template>
-                            <template>[[plusOne(index)]]</template>
-                        </vaadin-grid-column>
+                    <paper-input label="Facebook Ad Audience Name" id="newAudience"></paper-input>
 
-                        <vaadin-grid-column flex-grow="1">
-                            <template class="header">Ad</template>
-                            <template>[[item.name]]</template>
-                        </vaadin-grid-column>
-                    </vaadin-grid>
-
-                    <paper-button id="submit" on-tap="finishAd">Select Ad</paper-button>
+                    <paper-button id="submit" on-tap="finishAd">Create Facebook Ad Audience</paper-button>
 
                 </div>
-            </div>
 
-            <div id = "createAd">
-                <paper-button id="createAdButton" on-tap="createAd">Create Ad</paper-button>
             </div>
         </div>
 
