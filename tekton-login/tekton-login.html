@@ -42,15 +42,15 @@
             }
 
         </style>
-	
+
 	<div id = "title">
         	<img src="https://onlinecampaigntools.com/Content/Images/PDI_logo.png" title="OCC" alt="Online Campaign Center">
 	</div>
 
         <div id = "login">
-            <paper-input id="userName" label="Username"></paper-input>
-            <paper-input id="password" label="Password" type="password"></paper-input>
-            <paper-button id="signIn" on-tap="openUser">Sign In</paper-button>
+            <!--<paper-input id="userName" label="Username"></paper-input>-->
+            <!--<paper-input id="password" label="Password" type="password"></paper-input>-->
+            <paper-button id="signIn" on-tap="openPDILoginPage">Sign In with PDI</paper-button>
         </div>
 
     </template>
@@ -65,6 +65,35 @@
 
            openAdmin: function() {
                this.fire('admin-signed-in');
+           },
+
+           openPDILoginPage: function() {
+               // FIXME - store this elsewhere
+               var api_key = "--enter API key here--";
+               var auth_url = "https://authqa.the-pdi.com/auth/authorize";
+               // FIXME - We have to let PDI know to register this URI:
+               var redirect_uri = "https://us-central1-tekton-ad-module.cloudfunctions.net/PDIAuth";
+               // FIXME- remove this
+               redirect_uri = "http://localhost/";
+               var url = auth_url + "?api_key=" + encodeURIComponent(api_key) + "&redirect_uri=" + encodeURIComponent(redirect_uri);
+
+               newWindow = window.open(url, "Sign in with PDI", 'height=300vw,width=600vw');
+               if(window.focus)
+               {
+                   newWindow.focus();
+               }
+
+               // FIXME - The screen doesn't work on Firefox
+               // The screen also is blank on chrome, but after refresh (ctrl-r) the page displays correctly
+               // Forcing a refresh (ctrl-shift-r) goes back to being blank, refreshing (ctrl-r) shows it again
+
+
+               // QUESTION:
+               // If we redirect the user to the PDI login page, and the PDI logs back into
+               // When the user is redirected to our pre-registered redirect URI
+               // How do we know which user session the request token applies to?
+
+               // This will inform our implementation method.
            },
 
            openUser: function() {

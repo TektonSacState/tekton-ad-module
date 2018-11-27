@@ -1,6 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
+<link rel="import" href="../bower_components/iron-location/iron-location.html">
+<!-- FIXME - Was unable to get iron query params working -->
+<!-- <link rel="import" href="../bower_components/iron-location/iron-query-params.html"> -->
 
 <link rel="import" href="../tekton-login/tekton-login.html">
 <link rel="import" href="../tekton-admin/tekton-admin.html">
@@ -64,6 +67,10 @@
         </style>
 
         <div id="container">
+            <iron-location query="{{urlQueryParamsString}}"></iron-location>
+            <!-- FIXME - Was unable to get iron query params working -->
+            <!--<iron-query-params paramsString="{{urlQueryParamsString}}" paramsObject="{{urlQueryParamsObject}}"></iron-query-params>-->
+
             <template is="dom-if" if="[[canSignOut]]">
                 <paper-button id = "signOut" on-tap="signOut">Sign Out</paper-button>
             </template>
@@ -100,11 +107,20 @@
                     notify: false,
                     value: false
                 },
-
                 canGoBack: {
                     type: Boolean,
                     notify: false,
                     value: false
+                },
+                urlQueryParamsObject: {
+                    type: Object,
+                    notify: true,
+                    value: undefined
+                },
+                urlQueryParamsString: {
+                    type: String,
+                    notify: true,
+                    value: undefined
                 }
             },
 
@@ -188,6 +204,87 @@
                 this.$$('#pages').selected = "0";
                 this.canSignOut = false;
                 this.canGoBack = false;
+            },
+
+            ready: function() {
+                console.log("Ready function executed.");
+                console.log("=========================");
+                console.log(this.urlQueryParamsString);
+
+                // Convert the query to an Object:
+                // FIXME - Was unable to get iron query params working
+                // This code is copied from iron-query-params.html
+                // IF we fix the databinding above, we shouldn't need this code
+                var paramString = this.urlQueryParamsString;
+                var paramsObj = {};
+                // Work around a bug in decodeURIComponent where + is not
+                // converted to spaces:
+                paramString = (paramString || '').replace(/\+/g, '%20');
+                var paramList = paramString.split('&');
+                for (var i = 0; i < paramList.length; i++) {
+                    var param = paramList[i].split('=');
+                    if (param[0]) {
+                        paramsObj[decodeURIComponent(param[0])] =
+                        decodeURIComponent(param[1] || '');
+                    }
+                }
+                this.urlQueryParamsObject = paramsObj;
+                console.log(this.urlQueryParamsObject);
+                console.log("========================-");
+
+                // If we were given a param object with an access token:
+                // We are attempting to login,
+                // Exchange it for an access token, and on success advance to the next page:
+                if(this.urlQueryParamsObject.request_token != undefined)
+                {
+                    console.log("Found a request token!");
+                    //TODO - attempting to login
+
+
+                    // Exchanging the Request token for an access token:
+                    // TODO - store these elsewhere
+                    var exchangeURL = "https://authqa.the-pdi.com/accessTokens";
+                    var appKey = "8Ra1J1dhzBkoTrExaungULBFS-Awp-pTXJlApfyy9Vc=";
+                    //FIXME- it could be this one:
+                    //var appKey = "cUmbHcsfADA73m_2dZq8DtlF0XBjZwiE1xo48aJZUHI=";
+                    // or this one:
+                    //var appKey = "SF!P&1h1j4#$";
+
+                    const httpRequest = new XMLHttpRequest();
+                    httpRequest.open("POST",exchangeURL);
+                    //httpRequest.setRequestHeader('Access-Control-Allow-Origin',exchangeURL);
+                    httpRequest.setRequestHeader('Access-Control-Allow-Origin','*');
+                    var formData = new FormData();
+                    formData.append("RequestToken",this.urlQueryParamsObject.request_token);
+                    formData.append("AppKey",appKey);
+                    //var payload = {};
+                    // Options: [EXTERN_ID,EMAIL,PHONE,GEN,DOBY,DOBM,DOBD,LN,FN,FI,CT,ST,ZIP,MADID,COUNTRY"]
+                    //payload.schema = ["FN","LN","EMAIL","PHONE"];
+                    //payload.data = [];
+                    //payload.data.push(["Bill","Billy","bill@bill.com","1234567890"]);
+                    //payload.data.push(["Bob","Bobby","bob@bob.com","5553332222"]);
+                    //payload.data.push(["Steve","Stevey","steve@steve.com","2223334444"]);
+                    //formData.append("payload",JSON.stringify(payload));
+
+                    httpRequest.send(formData);
+
+                    httpRequest.onreadystatechange=(e) => {
+                        // If the httpRequest state is DONE (4)
+                        if(httpRequest.readyState == 4) {
+                            console.log("Token Exchange Response: ");
+                            console.log("~~~~~~~~~~~~~~~~~~~~~~~~");
+                            console.log(httpRequest);
+                            console.log(httpRequest.responseText);
+                            //var data = null;
+                            //if(httpRequest.responseText) {
+                            //    // JSONifying the response:
+                            //    data = JSON.parse(httpRequest.responseText);
+                            //    console.log(data);
+                            //}
+                            console.log("~~~~~~~~~~~~~~~~~~~~~~~~");
+                        }
+                    }
+                }
             }
 
         });
