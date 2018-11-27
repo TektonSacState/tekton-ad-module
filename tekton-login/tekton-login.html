@@ -48,8 +48,6 @@
 	</div>
 
         <div id = "login">
-            <!--<paper-input id="userName" label="Username"></paper-input>-->
-            <!--<paper-input id="password" label="Password" type="password"></paper-input>-->
             <paper-button id="signIn" on-tap="openPDILoginPage">Sign In with PDI</paper-button>
         </div>
 
@@ -60,7 +58,6 @@
            is: "tekton-login",
 
            properties: {
-
            },
 
            openAdmin: function() {
@@ -69,7 +66,7 @@
 
            openPDILoginPage: function() {
                // FIXME - store this elsewhere
-               var api_key = "--enter API key here--";
+               var api_key = "--redacted--";
                var auth_url = "https://authqa.the-pdi.com/auth/authorize";
                // FIXME - We have to let PDI know to register this URI:
                var redirect_uri = "https://us-central1-tekton-ad-module.cloudfunctions.net/PDIAuth";

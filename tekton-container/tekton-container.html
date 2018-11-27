@@ -2,8 +2,10 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 <link rel="import" href="../bower_components/iron-location/iron-location.html">
-<!-- FIXME - Was unable to get iron query params working -->
-<!-- <link rel="import" href="../bower_components/iron-location/iron-query-params.html"> -->
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+
 
 <link rel="import" href="../tekton-login/tekton-login.html">
 <link rel="import" href="../tekton-admin/tekton-admin.html">
@@ -66,10 +68,18 @@
 
         </style>
 
+        <firebase-app
+          auth-domain={{dbConfig.authDomain}}
+          database-url={{dbConfig.dbURL}}
+          api-key={{dbConfig.apiKey}}
+          storage-bucket={{dbConfig.storageBucket}}
+          messaging-sender-id={{dbConfig.messagingSenderId}}>
+        </firebase-app>
+
+        <firebase-query id= "query" path="/users" data="{{queryData}}"></firebase-query>
+
         <div id="container">
             <iron-location query="{{urlQueryParamsString}}"></iron-location>
-            <!-- FIXME - Was unable to get iron query params working -->
-            <!--<iron-query-params paramsString="{{urlQueryParamsString}}" paramsObject="{{urlQueryParamsObject}}"></iron-query-params>-->
 
             <template is="dom-if" if="[[canSignOut]]">
                 <paper-button id = "signOut" on-tap="signOut">Sign Out</paper-button>
@@ -112,6 +122,22 @@
                     notify: false,
                     value: false
                 },
+                dbConfig: {
+                  type: Object,
+                  notify: true,
+                  value: {
+                    authDomain: "tekton-ad-module.firebaseapp.com",
+                    dbURL: "https://tekton-ad-module.firebaseio.com",
+                    apiKey: "AIzaSyA0RURd-YAf70pj0VvfPyQJoBMRJ7nHN-U",
+                    projectId: "tekton-ad-module",
+                    storageBucket: "tekton-ad-module.appspot.com",
+                    messagingSenderId: "92765486328"
+                  }
+                },
+                queryData : {
+                  type: Object,
+                  notify: true
+                },
                 urlQueryParamsObject: {
                     type: Object,
                     notify: true,
@@ -123,6 +149,10 @@
                     value: undefined
                 }
             },
+
+            observers: [
+                'dataChanged(queryData.*)'
+            ],
 
             listeners: {
                 'admin-signed-in': 'toggleLogin',
@@ -136,6 +166,18 @@
                 'ad-creator-button-tapped': 'toggleAdSelector',
                 'manage-ads-tapped': 'toggleAdManager',
                 'sign-out-tapped': 'signOut'
+            },
+
+            dataChanged: function(newData, oldData) {
+              console.log("data at query location changed!");
+              console.log("Old Data: ");
+              console.log(oldData);
+              console.log("New Data: ");
+              console.log(newData);
+              console.log("Current Object State: ");
+              console.log(this.queryData);
+
+              //this.queryData[4].$key = "tester";
             },
 
             toggleLogin: function() {
@@ -212,9 +254,7 @@
                 console.log(this.urlQueryParamsString);
 
                 // Convert the query to an Object:
-                // FIXME - Was unable to get iron query params working
-                // This code is copied from iron-query-params.html
-                // IF we fix the databinding above, we shouldn't need this code
+                // NOTE - This code is copied from iron-query-params.html
                 var paramString = this.urlQueryParamsString;
                 var paramsObj = {};
                 // Work around a bug in decodeURIComponent where + is not
@@ -244,11 +284,11 @@
                     // Exchanging the Request token for an access token:
                     // TODO - store these elsewhere
                     var exchangeURL = "https://authqa.the-pdi.com/accessTokens";
-                    var appKey = "8Ra1J1dhzBkoTrExaungULBFS-Awp-pTXJlApfyy9Vc=";
+                    var appKey = "--redacted--";
                     //FIXME- it could be this one:
-                    //var appKey = "cUmbHcsfADA73m_2dZq8DtlF0XBjZwiE1xo48aJZUHI=";
+                    //var appKey = "--redacted--";
                     // or this one:
-                    //var appKey = "SF!P&1h1j4#$";
+                    //var appKey = "--redacted--";
 
                     const httpRequest = new XMLHttpRequest();
                     httpRequest.open("POST",exchangeURL);
