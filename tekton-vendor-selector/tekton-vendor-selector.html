@@ -1,5 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 <link rel="import" href="../bower_components/google-signin/google-signin.html">
+<link rel="import" href="../bower_components/paper-button/paper-button.html">
 
 <dom-module id="tekton-vendor-selector">
     <template>
@@ -15,7 +16,8 @@
                 position: relative;
                 display: flex;
                 justify-content: center;
-                top: 90px;
+                top: 120px;
+
             }
 
             #facebookLogo {
@@ -45,34 +47,69 @@
                 cursor: pointer;
             }
 
+            #dbButton {
+                background: LightGray;
+                position: relative;
+                justify-content: center;
+                left: 42%;
+            }
+
+            #card {
+              bottom: 50px;
+              position: relative;
+            }
+
         </style>
+        <head>
+
+          <link rel="import" href="my-app.html">
+        </head>
+
+        <firebase-query
+          id="query"
+          path="/users/[[users.uid]]/notes"
+          data="{{notes}}">
+        </firebase-query>
+
 
         <h1 id = "title">Vendor Selection</h1>
+          <div id="logos">
+              <img id="facebookLogo" src="logos/facebook-icon.png" on-tap="openAdSelector" alt="Facebook" height="42" width="42">
+              <google-signin id="googleLogo" label-signin="Sign-in" client-id="[[clientId]]" scopes="https://www.googleapis.com/auth/drive"></google-signin>
+              <img id="twitterLogo" src="logos/twitter-logo.png" on-tap="openAdSelector" alt="Twitter" height="42" width="42">
+          </div>
 
-        <div id="logos">
-            <img id="facebookLogo" src="logos/facebook-icon.png" on-tap="openAdSelector" alt="Facebook" height="42" width="42">
-            <google-signin id="googleLogo" label-signin="Sign-in" client-id="[[clientId]]" scopes="https://www.googleapis.com/auth/drive"></google-signin>
-            <img id="twitterLogo" src="logos/twitter-logo.png" on-tap="openAdSelector" alt="Twitter" height="42" width="42">
-        </div>
+
 
     </template>
 
     <script>
-        Polymer({
-            is: "tekton-vendor-selector",
 
-            properties: {
-                clientId: {
-                    type: String,
-                    value: "560070693060-2mvbvktiafm0f0hs7hno0819n1b99egn.apps.googleusercontent.com",
-                    notify: false
-                }
-            },
 
-            openAdSelector: function() {
-                this.fire('logo-tapped');
-            }
+      Polymer({
+          is: "tekton-vendor-selector",
 
-        });
+          properties: {
+              clientId: {
+                  type: String,
+                  value: "560070693060-2mvbvktiafm0f0hs7hno0819n1b99egn.apps.googleusercontent.com",
+                  notify: false
+              },
+              notes: {
+                type: Object
+              }
+          },
+          openAdSelector: function() {
+              this.fire('logo-tapped');
+          },
+          // Push value to db
+          add : function() {
+            this.$.query.ref.push({
+                content: this.$.input.value
+            });
+            // Clear out the input after note added
+            this.$.input.value = null;
+          }
+      });
     </script>
 </dom-module>

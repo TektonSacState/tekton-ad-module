@@ -1,5 +1,9 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-app.html">
+<link rel="import" href="../bower_components/polymerfire/firebase-query.html">
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
+<link rel="import" href="../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../bower_components/iron-pages/iron-pages.html">
 
 <link rel="import" href="../tekton-login/tekton-login.html">
@@ -63,6 +67,19 @@
 
         </style>
 
+        <head>
+
+        </head>
+
+        <firebase-app
+          auth-domain="tekton-ad-module.firebaseapp.com"
+          database-url="https://tekton-ad-module.firebaseio.com"
+          api-key="AIzaSyA0RURd-YAf70pj0VvfPyQJoBMRJ7nHN-U"
+          name="tektondb"
+          storage-bucket="tekton-ad-module.appspot.com"
+          messaging-sender-id="92765486328">
+        </firebase-app>
+
         <div id="container">
             <template is="dom-if" if="[[canSignOut]]">
                 <paper-button id = "signOut" on-tap="signOut">Sign Out</paper-button>
@@ -88,9 +105,18 @@
             </template>
 
         </div>
+
+
+
+        <!-- <firebase-auth id="auth" user="{{user}}" provider="google" on-error="handleError">
+        </firebase-auth> -->
+
+
+
     </template>
 
     <script>
+//on-error="handleError"
         Polymer({
             is: "tekton-container",
 
@@ -105,7 +131,26 @@
                     type: Boolean,
                     notify: false,
                     value: false
+                },
+
+                databaseConfig: {
+                  type: Object,
+                  notify: true,
+                  value: {
+                    apiKey: "AIzaSyA0RURd-YAf70pj0VvfPyQJoBMRJ7nHN-U",
+                    authDomain: "tekton-ad-module.firebaseapp.com",
+                    databaseURL: "https://tekton-ad-module.firebaseio.com",
+                    projectId: "tekton-ad-module",
+                    storageBucket: "tekton-ad-module.appspot.com",
+                    messagingSenderId: "92765486328"
+                  }
+                },
+
+                queryData : {
+                  type: Object,
+                  notify: true
                 }
+
             },
 
             listeners: {
