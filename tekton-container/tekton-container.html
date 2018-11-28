@@ -10,6 +10,7 @@
 <link rel="import" href="../tekton-ad-selector/tekton-ad-selector.html">
 <link rel="import" href="../tekton-ad-creator/tekton-ad-creator.html">
 <link rel="import" href="../tekton-ad-manager/tekton-ad-manager.html">
+<link rel="import" href="../tekton-impressions/tekton-impressions.html">
 
 <dom-module id="tekton-container">
     <template>
@@ -77,6 +78,7 @@
                 <tekton-ad-selector id="adSelector"></tekton-ad-selector>
                 <tekton-ad-creator id="adCreator"></tekton-ad-creator>
                 <tekton-ad-manager id="adManager"></tekton-ad-manager>
+                <tekton-impressions id="impressions"></tekton-impressions>
                 <div id="finished">
                     <b id="done">Done!</b>
                     <b id="submitted">Universe submitted to Facebook.</b>
@@ -119,7 +121,8 @@
                 'create-ad-tapped': 'toggleCreateAd',
                 'ad-creator-button-tapped': 'toggleAdSelector',
                 'manage-ads-tapped': 'toggleAdManager',
-                'sign-out-tapped': 'signOut'
+                'sign-out-tapped': 'signOut',
+                'view-impressions-tapped': 'toggleViewImpressions'
             },
 
             toggleLogin: function() {
@@ -165,6 +168,12 @@
             },
 
             toggleFinished: function() {
+                this.$$('#pages').selected = "9";
+                this.canSignOut = true;
+                this.canGoBack = true;
+            },
+
+            toggleViewImpressions: function() {
                 this.$$('#pages').selected = "8";
                 this.canSignOut = true;
                 this.canGoBack = true;
@@ -173,7 +182,7 @@
             goBack: function() {
                 var page = this.$$('#pages').selected;
 
-                if (page === "3" || page === "7" || page === "8") {
+                if (page === "3" || page === "7" || page === "8" || page === "9") {
                     this.$$('#pages').selected = "2";
                     this.canGoBack = false;
                 } else if (page === "4") {
@@ -181,7 +190,6 @@
                 } else if (page === "5") {
                     this.$$('#pages').selected = "4";
                 }
-
             },
 
             signOut: function() {
