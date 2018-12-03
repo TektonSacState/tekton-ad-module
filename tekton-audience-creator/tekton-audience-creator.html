@@ -1,0 +1,68 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-input/paper-input.html">
+<link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="tekton-audience-creator">
+    <template>
+        <style>
+            #title {
+                text-align: center;
+                font-family: arial;
+                font-size: 25;
+                color: #484848;
+            }
+            #audienceName {
+                width: 300px;
+                margin: 0 auto;
+                margin-top: 10%;
+            }
+            #postBody {
+                width: 300px;
+                margin: 0 auto;
+                margin-top: 2%;
+            }
+            #buttonDiv {
+                margin-top: 2%;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+
+            #createAudienceButtonDiv {
+                border: none;
+                border-radius: 3px;
+                background-color: #8AB05B;
+                color: #ffffff;
+                width: 40%;
+                text-transform: uppercase;
+                text-shadow: none;
+                font-weight: bold;
+                font-size: 17px;
+                font-family: Arial;
+                margin: 10% auto 0 auto;
+            }
+
+        </style>
+
+        <h1 id = "title">Enter New Facebook Audience Name</h1>
+        <paper-input id="audienceName" label="New Facebook Audience Name"></paper-input>
+        <div id="createAudienceButtonDiv">
+            <paper-button id="createAudienceButton" on-tap="createAudience">CREATE FACEBOOK AUDIENCE</paper-button>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "tekton-audience-creator",
+
+            properties: {
+            },
+
+            createAudience: function() {
+                this.fire('submit-tapped');
+            }
+        });
+    </script>
+</dom-module>

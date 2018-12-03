@@ -1,5 +1,4 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/google-signin/google-signin.html">
 
 <dom-module id="tekton-vendor-selector">
     <template>
@@ -82,15 +81,10 @@
             is: "tekton-vendor-selector",
 
             properties: {
-                clientId: {
-                    type: String,
-                    value: "560070693060-2mvbvktiafm0f0hs7hno0819n1b99egn.apps.googleusercontent.com",
-                    notify: false
-                }
             },
 
             openAdSelector: function() {
-                this.fire('logo-tapped');
+                this.fire('user-fb-signed-in');
             }
 
         });

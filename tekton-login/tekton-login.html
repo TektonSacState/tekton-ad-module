@@ -99,10 +99,6 @@
            properties: {
            },
 
-           openAdmin: function() {
-               this.fire('admin-signed-in');
-           },
-
            openPDILoginPage: function() {
                var appConfig = document.querySelector("tekton-container").appConfig;
 
@@ -116,18 +112,7 @@
 
                // Redirect the user to the auth URL:
                window.location.href = url;
-               /*newWindow = window.open(url, "Sign in with PDI", 'height=300vw,width=600vw');
-               if(window.focus)
-               {
-                   newWindow.focus();
-               }*/
            },
-
-           openUser: function() {
-               this.$$('#userName').value = null;
-               this.$$('#password').value = null;
-               this.fire('user-signed-in');
-           }
         });
     </script>
 </dom-module>

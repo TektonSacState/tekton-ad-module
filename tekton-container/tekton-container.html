@@ -8,14 +8,11 @@
 
 
 <link rel="import" href="../tekton-login/tekton-login.html">
-<link rel="import" href="../tekton-admin/tekton-admin.html">
 <link rel="import" href="../tekton-user/tekton-user.html">
 <link rel="import" href="../tekton-universe-selector/tekton-universe-selector.html">
 <link rel="import" href="../tekton-vendor-selector/tekton-vendor-selector.html">
-<link rel="import" href="../tekton-ad-selector/tekton-ad-selector.html">
-<link rel="import" href="../tekton-ad-creator/tekton-ad-creator.html">
-<link rel="import" href="../tekton-ad-manager/tekton-ad-manager.html">
 <link rel="import" href="../tekton-impressions/tekton-impressions.html">
+<link rel="import" href="../tekton-audience-creator/tekton-audience-creator.html">
 
 <dom-module id="tekton-container">
     <template>
@@ -137,17 +134,18 @@
 
             <iron-pages id="pages" selected="0">
                 <tekton-login id = "login"></tekton-login>
-                <tekton-admin id = "admin"></tekton-admin>
                 <tekton-user id = "user"></tekton-user>
                 <tekton-universe-selector id="universeSelector"></tekton-universe-selector>
                 <tekton-vendor-selector id="vendorSelector"></tekton-vendor-selector>
-                <tekton-ad-selector id="adSelector"></tekton-ad-selector>
-                <tekton-ad-creator id="adCreator"></tekton-ad-creator>
-                <tekton-ad-manager id="adManager"></tekton-ad-manager>
-                <tekton-impressions id="impressions"></tekton-impressions>
+                <tekton-audience-creator id="audienceCreator"></tekton-audience-creator>
                 <div id="finished">
                     <b id="done">Done!</b>
                     <b id="submitted">Universe submitted to Facebook.</b>
+                </div>
+                <tekton-impressions id="impressions"></tekton-impressions>
+                <div id="viewImpressions">
+                    <b id="impressionsDone">Done!</b>
+                    <b id="impressionsGenerated">Impressions Finished Generating.</b>
                 </div>
             </iron-pages>
 
@@ -236,18 +234,15 @@
             ],
 
             listeners: {
-                'admin-signed-in': 'toggleLogin',
-                'user-signed-in': 'toggleUser',
+                'user-signed-in': 'toggleLogin',
                 'universe-selector-tapped': 'toggleUniverseSelector',
-                'back-user-tapped': 'toggleUser',
                 'next-tapped': 'toggleVendorSelector',
-                'logo-tapped': 'toggleAdSelector',
-                'submit-tapped': 'toggleFinished',
-                'create-ad-tapped': 'toggleCreateAd',
-                'ad-creator-button-tapped': 'toggleAdSelector',
-                'manage-ads-tapped': 'toggleAdManager',
+                'user-fb-signed-in': 'toggleAudienceCreator',
+                'submit-tapped': 'sendUniverse',
                 'sign-out-tapped': 'signOut',
-                'view-impressions-tapped': 'toggleViewImpressions'
+                'select-impressions-tapped': 'toggleSelectImpressions',
+                'view-impressions-tapped': 'generateImpressions',
+                'back-user-tapped': 'toggleLogin'
             },
 
             dataChanged: function(newData, oldData) {
@@ -259,50 +254,32 @@
                 this.canGoBack = false;
             },
 
-            toggleUser: function() {
-                this.$$('#pages').selected = "2";
-                this.canSignOut = true;
-                this.canGoBack = false;
-            },
-
             toggleUniverseSelector: function() {
-                this.$$('#pages').selected = "3";
+                this.$$('#pages').selected = "2";
                 this.canSignOut = true;
                 this.canGoBack = true;
             },
 
             toggleVendorSelector: function() {
+                this.$$('#pages').selected = "3";
+                this.canSignOut = true;
+                this.canGoBack = true;
+            },
+
+            toggleAudienceCreator: function() {
                 this.$$('#pages').selected = "4";
                 this.canSignOut = true;
                 this.canGoBack = true;
             },
 
-            toggleAdSelector: function() {
+            toggleFinished: function() {
                 this.$$('#pages').selected = "5";
                 this.canSignOut = true;
                 this.canGoBack = true;
             },
 
-            toggleCreateAd: function() {
+            toggleSelectImpressions: function() {
                 this.$$('#pages').selected = "6";
-                this.canSignOut = true;
-                this.canGoBack = false;
-            },
-
-            toggleAdManager: function() {
-                this.$$('#pages').selected = "7";
-                this.canSignOut = true;
-                this.canGoBack = true;
-            },
-
-            toggleFinished: function() {
-                this.$$('#pages').selected = "9";
-                this.canSignOut = true;
-                this.canGoBack = true;
-            },
-
-            toggleViewImpressions: function() {
-                this.$$('#pages').selected = "8";
                 this.canSignOut = true;
                 this.canGoBack = true;
             },
@@ -310,13 +287,13 @@
             goBack: function() {
                 var page = this.$$('#pages').selected;
 
-                if (page === "3" || page === "7" || page === "8" || page === "9") {
-                    this.$$('#pages').selected = "2";
+                if (page === "2" || page === "5" || page === "6" || page ==="7") {
+                    this.$$('#pages').selected = "1";
                     this.canGoBack = false;
                 } else if (page === "4") {
                     this.$$('#pages').selected = "3";
-                } else if (page === "5") {
-                    this.$$('#pages').selected = "4";
+                } else if (page === "3") {
+                    this.$$('#pages').selected = "2";
                 }
             },
 
@@ -366,7 +343,21 @@
                     // After the user is signed in, advance the user to the next page
                     this.fire('user-signed-in');
                 }
-            }
+            },
+
+            sendUniverse: function() {
+                console.log("Send Universe Function executed.");
+                this.$$('#pages').selected = "5";
+                this.canSignOut = true;
+                this.canGoBack = true;
+            },
+            generateImpressions: function() {
+                console.log("Generate Impressions Function executed.");
+                this.$$('#pages').selected = "7";
+                this.canSignOut = true;
+                this.canGoBack = true;
+            },
+
 
         });
     </script>

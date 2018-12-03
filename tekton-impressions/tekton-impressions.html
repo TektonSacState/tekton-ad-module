@@ -42,20 +42,48 @@
                 justify-content: center;
             }
 
+            #buttonDiv {
+                margin-top: 2%;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+
+            #viewImpressions {
+                border: none;
+                border-radius: 3px;
+                background-color: #8AB05B;
+                color: #ffffff;
+                width: 45%;
+                text-transform: uppercase;
+                text-shadow: none;
+                font-weight: bold;
+                font-size: 17px;
+                font-family: Arial;
+                margin: 3% auto 0 auto;
+            }
+
         </style>
 
         <h2 id = "title">Impressions</h2>
 
         <div id = "dataSelection">
-            <vaadin-combo-box id="clientSelection" label="Client:" items = "[[clients]]"></vaadin-combo-box>
+            <vaadin-combo-box id="clientSelection" label="Client:" items = "[[clients]]" value="{{client}}"></vaadin-combo-box>
         </div>
 
         <h4 id = "dateSectionTitle">Date Range:</h4>
 
         <div id = "dateSelection">
-            <vaadin-date-picker id = "fromDate" label = "From:"></vaadin-date-picker>
-            <vaadin-date-picker id = "toDate" label = "To:"></vaadin-date-picker>
+            <vaadin-date-picker id = "fromDate" label = "From:" value="{{fromDate}}"></vaadin-date-picker>
+            <vaadin-date-picker id = "toDate" label = "To:" value="{{toDate}}"></vaadin-date-picker>
         </div>
+
+        <div id = "buttonDiv">
+            <template is="dom-if" if="[[canAdvance]]">
+                <paper-button id="viewImpressions" on-tap="generateImpressionsReport">View Impressions</paper-button>
+            </template>
+        </div>
+
 
     </template>
 
@@ -66,8 +94,52 @@
                 clients: {
                     type: Array,
                     value: ["Aaron", "Luke", "Luis", "Ryan", "EJ", "David", "Jake"],
-                    notify: false
+                    notify: false,
+                },
+                canAdvance: {
+                    type: Boolean,
+                    notify: true,
+                    value: false
+                },
+                client: {
+                    type: String,
+                    value: undefined,
+                    notify: true,
+                    observer: 'checkIfCanAdvance'
+                },
+                fromDate: {
+                    type: String,
+                    value: undefined,
+                    notify: true,
+                    observer: 'checkIfCanAdvance'
+                },
+                toDate: {
+                    type: String,
+                    value: undefined,
+                    notify: true,
+                    observer: 'checkIfCanAdvance'
                 }
+            },
+
+            // Called when one of the above variables changes
+            checkIfCanAdvance: function(newValue, oldValue) {
+                // If all three fields are empty
+                if(this.client == "" || this.fromDate == "" || this.toDate == "") {
+                    this.canAdvance = false;
+                }
+                // If fromDate is after to toDate
+                else if(Date.parse(this.fromDate) > Date.parse(this.toDate)) {
+                    this.canAdvance = false;
+                } else {
+                    this.canAdvance = true;
+                }
+            },
+
+            // Advances the user to the view imrpessions report page
+            generateImpressionsReport: function() {
+                console.log("generate Impressions Report View");
+                this.fire('select-impressions-tapped');
+                //TODO - generate and display impressions report
             }
         });
     </script>
