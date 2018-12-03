@@ -5,51 +5,89 @@
 <dom-module id="tekton-login">
     <template>
         <style>
-            #userName {
-                width: 300px;
-                margin: 0 auto;
+            :host {
+                height: 100%;
             }
 
-            #password {
-                width: 300px;
+            .loginInput {
+                width: 60%;
                 margin: 0 auto;
             }
 
             #signIn {
                 border: none;
-    		border-radius: 3px;
-    		background-color: #8AB05B;
-    		margin-top: 5%;
-    		position: relative;
-    		left: calc(50% - 100px);
-    		color: #ffffff;
-    		height: 39px;
-    		width: 200px;
-    		text-transform: uppercase;
-    		text-shadow: none;
-    		font-weight: bold;
-    		font-size: 17px;
-    		font-family: Arial;
+                border-radius: 3px;
+                background-color: #8AB05B;
+                color: #ffffff;
+                width: 45%;
+                text-transform: uppercase;
+                text-shadow: none;
+                font-weight: bold;
+                font-size: 17px;
+                font-family: Arial;
+                margin: 3% auto 0 auto;
             }
 
             #title {
                 text-align: center;
-		padding-top: 40px;
+                width: 100%;
+            }
+
+            #loginInputs {
+                margin-top: 2%;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+
+            #pdiLogo {
+                width: 55%;
             }
 
             #login {
-                margin-top: 10px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+            }
+
+            @media (max-width:320px)  {
+                /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+
+                .loginInput {
+                    width: 250px;
+                    margin: 0 auto;
+                }
+
+                #logo {
+                    width: 80%;
+                }
+            }
+
+            @media (max-width:480px)  {
+                /* smartphones, Android phones, landscape iPhone */
+
+                .loginInput {
+                    width: 250px;
+                    margin: 0 auto;
+                }
+
+                #logo {
+                    width: 80%;
+                }
             }
 
         </style>
 
-	<div id = "title">
-        	<img src="https://onlinecampaigntools.com/Content/Images/PDI_logo.png" title="OCC" alt="Online Campaign Center">
-	</div>
+        <div id="login">
+            <div id = "title">
+                <img id="pdiLogo" src="https://onlinecampaigntools.com/Content/Images/PDI_logo.png" title="OCC" alt="Online Campaign Center">
+            </div>
 
-        <div id = "login">
-            <paper-button id="signIn" on-tap="openPDILoginPage">Sign In with PDI</paper-button>
-
+            <div id = "loginInputs">
+                <paper-button id="signIn" on-tap="openPDILoginPage">Sign In with PDI</paper-button>
+            </div>
         </div>
 
     </template>

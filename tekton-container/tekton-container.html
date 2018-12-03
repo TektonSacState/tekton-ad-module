@@ -15,6 +15,7 @@
 <link rel="import" href="../tekton-ad-selector/tekton-ad-selector.html">
 <link rel="import" href="../tekton-ad-creator/tekton-ad-creator.html">
 <link rel="import" href="../tekton-ad-manager/tekton-ad-manager.html">
+<link rel="import" href="../tekton-impressions/tekton-impressions.html">
 
 <dom-module id="tekton-container">
     <template>
@@ -23,10 +24,12 @@
                 border: 1px solid #ffffff;
                 border-radius: 1px;
                 background: white;
-                height: 350px;
-                width: 600px;
+                height: 45vh;
+                width: 50vw;
                 position: relative;
                 box-shadow: 2px 2px 20px lightslategrey;
+                min-width: 300px;
+                min-height: 200px;
             }
 
             #signOut {
@@ -38,14 +41,15 @@
                 right: 5px;
                 top: 11px;
                 color: #525252;
+                z-index: 1000;
             }
 
             #back {
                 border: 1px #adadad solid;
                 border-radius: 3px;
                 background: white;
-                width: 60px;
-                height: 40px;
+                width: 15%;
+                height: 13%;
                 min-width: 1em;
                 position: absolute;
                 left: 5px;
@@ -54,17 +58,63 @@
                 color: #525252;
             }
 
-            #done {
+            #finished {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
                 position: relative;
-                top: 150px;
-                left: 300px;
+                top: 40%;
             }
 
-            #submitted {
-                position: relative;
-                top: 190px;
-                left: 165px;
+            #pages {
+                height: 100%;
             }
+
+            @media (max-width:320px)  {
+                /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+                #container {
+                    border: 1px solid #ffffff;
+                    border-radius: 1px;
+                    background: white;
+                    height: 80vh;
+                    width: 80vw;
+                    position: relative;
+                    box-shadow: 2px 2px 20px lightslategrey;
+                    overflow-x: hidden;
+                }
+
+                #done {
+                    left: 45%;
+                }
+
+                #submitted {
+                    left: 0;
+                }
+
+            }
+
+            @media (max-width:480px)  {
+                /* smartphones, Android phones, landscape iPhone */
+                #container {
+                    border: 1px solid #ffffff;
+                    border-radius: 1px;
+                    background: white;
+                    height: 80vh;
+                    width: 80vw;
+                    position: relative;
+                    box-shadow: 2px 2px 20px lightslategrey;
+                    overflow-x: hidden;
+                }
+
+                #done {
+                    left: 45%;
+                }
+
+                #submitted {
+                    left: 0;
+                }
+            }
+
 
         </style>
 
@@ -94,6 +144,7 @@
                 <tekton-ad-selector id="adSelector"></tekton-ad-selector>
                 <tekton-ad-creator id="adCreator"></tekton-ad-creator>
                 <tekton-ad-manager id="adManager"></tekton-ad-manager>
+                <tekton-impressions id="impressions"></tekton-impressions>
                 <div id="finished">
                     <b id="done">Done!</b>
                     <b id="submitted">Universe submitted to Facebook.</b>
@@ -195,7 +246,8 @@
                 'create-ad-tapped': 'toggleCreateAd',
                 'ad-creator-button-tapped': 'toggleAdSelector',
                 'manage-ads-tapped': 'toggleAdManager',
-                'sign-out-tapped': 'signOut'
+                'sign-out-tapped': 'signOut',
+                'view-impressions-tapped': 'toggleViewImpressions'
             },
 
             dataChanged: function(newData, oldData) {
@@ -244,6 +296,12 @@
             },
 
             toggleFinished: function() {
+                this.$$('#pages').selected = "9";
+                this.canSignOut = true;
+                this.canGoBack = true;
+            },
+
+            toggleViewImpressions: function() {
                 this.$$('#pages').selected = "8";
                 this.canSignOut = true;
                 this.canGoBack = true;
@@ -252,7 +310,7 @@
             goBack: function() {
                 var page = this.$$('#pages').selected;
 
-                if (page === "3" || page === "7" || page === "8") {
+                if (page === "3" || page === "7" || page === "8" || page === "9") {
                     this.$$('#pages').selected = "2";
                     this.canGoBack = false;
                 } else if (page === "4") {
