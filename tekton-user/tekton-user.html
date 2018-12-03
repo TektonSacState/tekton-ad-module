@@ -4,48 +4,33 @@
 <dom-module id="tekton-user">
     <template>
         <style>
-            #signOut {
-                border: 1px #adadad solid;
-    		border-radius: 3px;
-    		background: white;
-    		width: 120px;
-    		position: absolute;
-    		right: 5px;
-    		top: 11px;
-		color: #525252;
+            :host {
+                position: relative;
+                height: 100%;
             }
 
             #menuButtons {
+                text-align: center;
                 position: relative;
-    		top: 150px;
-    		text-align: center;
+                top: 20vh;
             }
 
             #sendUniverse {
-                border-radius: 3px;
-    		background: #8AB05B;
-    		width: 200px;
-    		height: 50px;
-    		color: white;
-    		text-transform: uppercase;
-    		font-weight: bold;
-    		font-family: Arial;
+                background: #8AB05B;
             }
 
-            #viewImpressions {
+            .userButton {
                 border-radius: 3px;
-    		background: #5b9fb0;
-    		width: 200px;
-    		height: 50px;
-    		color: white;
-    		text-transform: uppercase;
-    		font-weight: bold;
-    		font-family: Arial;
+                background: #5b9fb0;
+                width: 45%;
+                height: 14%;
+                color: white;
+                text-transform: uppercase;
+                font-weight: bold;
+                font-family: Arial;
             }
 
         </style>
-
-        <paper-button id = "signOut" on-tap="closeUser">Sign Out</paper-button>
 
         <div id="menuButtons">
             <paper-button id = "sendUniverse" on-tap="openUniverseSelection">Send Universe</paper-button>
@@ -60,10 +45,6 @@
 
             properties: {
 
-            },
-
-            closeUser: function() {
-                this.fire('sign-out-tapped');
             },
 
             openAdManager: function() {
