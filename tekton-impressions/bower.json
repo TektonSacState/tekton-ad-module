@@ -1,0 +1,10 @@
+{
+  "name": "tekton-impressions",
+  "homepage": "https://github.com/TektonSacState/tekton-ad-module",
+  "authors": [
+    "Jacob Bender <jdbender64@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT"
+}
