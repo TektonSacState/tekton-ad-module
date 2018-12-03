@@ -33,8 +33,8 @@
         </style>
 
         <div id="menuButtons">
-            <paper-button id = "sendUniverse" class="userButton" on-tap="openUniverseSelection">Send Universe</paper-button>
-            <paper-button id = "viewImpressions" class="userButton">View Impressions</paper-button>
+            <paper-button id = "sendUniverse" on-tap="openUniverseSelection">Send Universe</paper-button>
+            <paper-button id = "viewImpressions" on-tap="openImpressions">View Impressions</paper-button>
         </div>
 
     </template>
@@ -52,8 +52,11 @@
             },
 
             openUniverseSelection: function() {
-                console.log('send universe button tapped');
                 this.fire('universe-selector-tapped');
+            },
+
+            openImpressions: function() {
+                this.fire('view-impressions-tapped');
             }
 
         });
