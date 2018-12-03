@@ -64,7 +64,52 @@
                 height: 100%;
             }
 
-            @media only screen and (max-width: 768px) {
+            /*@media only screen and (max-width: 768px) {
+                #container {
+                    border: 1px solid #ffffff;
+                    border-radius: 1px;
+                    background: white;
+                    height: 350px;
+                    width: 300px;
+                    position: relative;
+                    box-shadow: 2px 2px 20px lightslategrey;
+                    overflow-x: hidden;
+                }
+
+                #done {
+                    left: 45%;
+                }
+
+                #submitted {
+                    left: 0;
+                }
+            }*/
+
+            @media (min-width:320px)  {
+                /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+                #container {
+                    border: 1px solid #ffffff;
+                    border-radius: 1px;
+                    background: white;
+                    height: 350px;
+                    width: 300px;
+                    position: relative;
+                    box-shadow: 2px 2px 20px lightslategrey;
+                    overflow-x: hidden;
+                }
+
+                #done {
+                    left: 45%;
+                }
+
+                #submitted {
+                    left: 0;
+                }
+
+            }
+
+            @media (min-width:480px)  {
+                /* smartphones, Android phones, landscape iPhone */
                 #container {
                     border: 1px solid #ffffff;
                     border-radius: 1px;
@@ -84,6 +129,7 @@
                     left: 0;
                 }
             }
+
 
         </style>
 
