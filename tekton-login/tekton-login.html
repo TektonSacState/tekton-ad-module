@@ -5,6 +5,10 @@
 <dom-module id="tekton-login">
     <template>
         <style>
+            :host {
+                height: 100%;
+            }
+
             .loginInput {
                 width: 60%;
                 margin: 0 auto;
@@ -26,29 +30,40 @@
 
             #title {
                 text-align: center;
-		        margin-top: 9%;
+                width: 100%;
             }
 
-            #login {
+            #loginInputs {
                 margin-top: 2%;
                 display: flex;
                 flex-direction: column;
+                width: 100%;
             }
 
             #pdiLogo {
                 width: 55%;
             }
 
-        </style>
-	
-	<div id = "title">
-        	<img id="pdiLogo" src="https://onlinecampaigntools.com/Content/Images/PDI_logo.png" title="OCC" alt="Online Campaign Center">
-	</div>
+            #login {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
+            }
 
-        <div id = "login">
-            <paper-input id="userName" class="loginInput" label="Username"></paper-input>
-            <paper-input id="password" class="loginInput" label="Password" type="password"></paper-input>
-            <paper-button id="signIn" on-tap="openUser">Sign In</paper-button>
+        </style>
+
+        <div id="login">
+            <div id = "title">
+                <img id="pdiLogo" src="https://onlinecampaigntools.com/Content/Images/PDI_logo.png" title="OCC" alt="Online Campaign Center">
+            </div>
+
+            <div id = "loginInputs">
+                <paper-input id="userName" class="loginInput" label="Username"></paper-input>
+                <paper-input id="password" class="loginInput" label="Password" type="password"></paper-input>
+                <paper-button id="signIn" on-tap="openUser">Sign In</paper-button>
+            </div>
         </div>
 
     </template>
