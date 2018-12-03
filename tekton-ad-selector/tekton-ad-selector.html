@@ -8,47 +8,38 @@
         <style>
             #menu {
                 display: flex;
-                margin: 5%;
-                margin-top: 8%;
-            }
-
-            #outerAdSelector {
-    		    position: relative;
-    		    height: 75%;
-    		    display: flex;
-    		    flex-direction: column;
-    		    justify-content: center;
-                margin: 0 auto;
-            }
-
-            #adSelector {
-    		    font-family: Arial;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
             }
 
             #submit {
                 border-radius: 3px;
                 background: #8AB05B;
                 color: white;
-                margin: 0 auto;
+                margin: 5% auto 0 auto;
             }
 
             #newAudience {
-                margin-bottom: 10%;
+                width: 50%;
+            }
+
+            @media (max-width:320px)  {
+                /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+
+            }
+
+            @media (max-width:480px)  {
+                /* smartphones, Android phones, landscape iPhone */
+
             }
 
         </style>
 
-        <div id = "menu">
-            <div id="outerAdSelector">
-                <div id = "adSelector">
-
-                    <paper-input label="Facebook Ad Audience Name" id="newAudience"></paper-input>
-
-                    <paper-button id="submit" on-tap="finishAd">Create Facebook Ad Audience</paper-button>
-
-                </div>
-
-            </div>
+        <div id="menu">
+            <paper-input label="Facebook Ad Audience Name" id="newAudience"></paper-input>
+            <paper-button id="submit" on-tap="finishAd">Create Facebook Ad Audience</paper-button>
         </div>
 
     </template>
