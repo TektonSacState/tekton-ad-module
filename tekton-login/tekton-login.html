@@ -52,7 +52,22 @@
                 height: 100%;
             }
 
-            @media only screen and (max-width: 768px) {
+            @media (max-width:320px)  {
+                /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+
+                .loginInput {
+                    width: 250px;
+                    margin: 0 auto;
+                }
+
+                #logo {
+                    width: 80%;
+                }
+            }
+
+            @media (max-width:480px)  {
+                /* smartphones, Android phones, landscape iPhone */
+
                 .loginInput {
                     width: 250px;
                     margin: 0 auto;

@@ -56,7 +56,9 @@
                 --paper-toast-color: white;
             }
 
-            @media only screen and (max-width: 768px) {
+            @media (max-width:320px)  {
+                /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+
                 #title {
                     position: relative;
                     top: 50px;
@@ -76,6 +78,40 @@
                     margin-left: calc(50% - 55px);
                     top: 63px;
                 }
+            }
+
+            @media (max-width:480px)  {
+                /* smartphones, Android phones, landscape iPhone */
+
+                #title {
+                    position: relative;
+                    top: 50px;
+                }
+
+                #universeGrid {
+                    position: relative;
+                    margin: 0 auto;
+                    left: 0;
+                    top: 50px;
+                }
+
+                #next {
+                    position: relative;
+                    right: 0;
+                    bottom: 0;
+                    margin-left: calc(50% - 55px);
+                    top: 63px;
+                }
+            }
+
+            @media (max-width:320px)  {
+                /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+
+            }
+
+            @media (max-width:480px)  {
+                /* smartphones, Android phones, landscape iPhone */
+
             }
 
         </style>
