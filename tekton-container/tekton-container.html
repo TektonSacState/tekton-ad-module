@@ -69,14 +69,14 @@
         </style>
 
         <firebase-app
-          auth-domain={{dbConfig.authDomain}}
-          database-url={{dbConfig.dbURL}}
-          api-key={{dbConfig.apiKey}}
-          storage-bucket={{dbConfig.storageBucket}}
-          messaging-sender-id={{dbConfig.messagingSenderId}}>
+          auth-domain={{appConfig.dbConfig.authDomain}}
+          database-url={{appConfig.dbConfig.dbURL}}
+          api-key={{appConfig.dbConfig.apiKey}}
+          storage-bucket={{appConfig.dbConfig.storageBucket}}
+          messaging-sender-id={{appConfig.dbConfig.messagingSenderId}}>
         </firebase-app>
 
-        <firebase-query id= "query" path="/users" data="{{queryData}}"></firebase-query>
+        <firebase-query id= "query" path="/users" data="{{firebaseQueryData}}"></firebase-query>
 
         <div id="container">
             <iron-location query="{{urlQueryParamsString}}"></iron-location>
@@ -122,36 +122,66 @@
                     notify: false,
                     value: false
                 },
-                dbConfig: {
-                  type: Object,
-                  notify: true,
-                  value: {
-                    authDomain: "tekton-ad-module.firebaseapp.com",
-                    dbURL: "https://tekton-ad-module.firebaseio.com",
-                    apiKey: "AIzaSyA0RURd-YAf70pj0VvfPyQJoBMRJ7nHN-U",
-                    projectId: "tekton-ad-module",
-                    storageBucket: "tekton-ad-module.appspot.com",
-                    messagingSenderId: "92765486328"
-                  }
-                },
-                queryData : {
+                firebaseQueryData: {
                   type: Object,
                   notify: true
+                },
+                firebaseRef: {
+                    type: Object,
+                    notify: true
+                },
+                urlQueryParamsString: {
+                    type: String,
+                    notify: true,
+                    value: undefined
                 },
                 urlQueryParamsObject: {
                     type: Object,
                     notify: true,
                     value: undefined
                 },
-                urlQueryParamsString: {
-                    type: String,
+                appConfig: {
+                    type: Object,
                     notify: true,
-                    value: undefined
+                    value: {
+                        PDIConfig: {
+                            apiKey: "8Ra1J1dhzBkoTrExaungULBFS-Awp-pTXJlApfyy9Vc=",
+                            apiUrl: "https://authqa.the-pdi.com/",
+                            authApiUrl: "https://authqa.the-pdi.com/",
+                            authRedirectUrl: "https://tekton-ad-module.firebaseapp.com/",
+                            authEndpoint: "auth/authorize",
+                            authTokenExchangeEndpoint: "accessTokens"
+                        },
+                        FBConfig: {
+                            test: "test"
+                        },
+                        dbConfig: {
+                          authDomain: "tekton-ad-module.firebaseapp.com",
+                          dbURL: "https://tekton-ad-module.firebaseio.com",
+                          apiKey: "AIzaSyA0RURd-YAf70pj0VvfPyQJoBMRJ7nHN-U",
+                          projectId: "tekton-ad-module",
+                          storageBucket: "tekton-ad-module.appspot.com",
+                          messagingSenderId: "92765486328"
+                        }
+                    }
+                },
+                userData: {
+                    type: Object,
+                    notify: true,
+                    value: {
+                        userId: -1,
+                        pdiRequestToken: "",
+                        pdiAccessToken: "",
+                        isPdiRep: false
+
+                        //TODO - any FB account details
+
+                    }
                 }
             },
 
             observers: [
-                'dataChanged(queryData.*)'
+                'dataChanged(firebaseQueryData.*)'
             ],
 
             listeners: {
@@ -169,15 +199,6 @@
             },
 
             dataChanged: function(newData, oldData) {
-              console.log("data at query location changed!");
-              console.log("Old Data: ");
-              console.log(oldData);
-              console.log("New Data: ");
-              console.log(newData);
-              console.log("Current Object State: ");
-              console.log(this.queryData);
-
-              //this.queryData[4].$key = "tester";
             },
 
             toggleLogin: function() {
@@ -239,7 +260,6 @@
                 } else if (page === "5") {
                     this.$$('#pages').selected = "4";
                 }
-
             },
 
             signOut: function() {
@@ -249,81 +269,44 @@
             },
 
             ready: function() {
-                console.log("Ready function executed.");
-                console.log("=========================");
-                console.log(this.urlQueryParamsString);
+                // Store the DB Object for reading / writing
+                this.firebaseRef = this.$$('#query').ref;
 
-                // Convert the query to an Object:
+                // Converting the URL's query parameters to a JS Object
                 // NOTE - This code is copied from iron-query-params.html
                 var paramString = this.urlQueryParamsString;
                 var paramsObj = {};
-                // Work around a bug in decodeURIComponent where + is not
-                // converted to spaces:
+                // Work around a bug in decodeURIComponent where + is converted to spaces:
                 paramString = (paramString || '').replace(/\+/g, '%20');
                 var paramList = paramString.split('&');
                 for (var i = 0; i < paramList.length; i++) {
                     var param = paramList[i].split('=');
                     if (param[0]) {
-                        paramsObj[decodeURIComponent(param[0])] =
-                        decodeURIComponent(param[1] || '');
+                        paramsObj[decodeURIComponent(param[0])] = decodeURIComponent(param[1] || '');
                     }
                 }
+                // Storing the parameters object
                 this.urlQueryParamsObject = paramsObj;
-                console.log(this.urlQueryParamsObject);
-                console.log("========================-");
 
-                // If we were given a param object with an access token:
+                // If we were given a param object with a request token:
                 // We are attempting to login,
                 // Exchange it for an access token, and on success advance to the next page:
                 if(this.urlQueryParamsObject.request_token != undefined)
                 {
-                    console.log("Found a request token!");
-                    //TODO - attempting to login
+                    // TODO - Implement exchanging the request token for an auth token
+                    // On success, advence the user to the next page.
 
+                    // Storing the request token
+                    this.userData.pdiRequestToken = this.urlQueryParamsObject.request_token;
 
-                    // Exchanging the Request token for an access token:
-                    // TODO - store these elsewhere
-                    var exchangeURL = "https://authqa.the-pdi.com/accessTokens";
-                    var appKey = "--redacted--";
-                    //FIXME- it could be this one:
-                    //var appKey = "--redacted--";
-                    // or this one:
-                    //var appKey = "--redacted--";
+                    // FIXME - Setting some temp user variables for now
+                    this.userData.pdiAccessToken = "access_token_received_from_PDI";
+                    // FIXME - parse whether or not this user is a PDI rep
+                    // PDI Reps are allowed to view ad impressions for ALL clients
+                    this.userData.isPdiRep = true;
 
-                    const httpRequest = new XMLHttpRequest();
-                    httpRequest.open("POST",exchangeURL);
-                    //httpRequest.setRequestHeader('Access-Control-Allow-Origin',exchangeURL);
-                    httpRequest.setRequestHeader('Access-Control-Allow-Origin','*');
-                    var formData = new FormData();
-                    formData.append("RequestToken",this.urlQueryParamsObject.request_token);
-                    formData.append("AppKey",appKey);
-                    //var payload = {};
-                    // Options: [EXTERN_ID,EMAIL,PHONE,GEN,DOBY,DOBM,DOBD,LN,FN,FI,CT,ST,ZIP,MADID,COUNTRY"]
-                    //payload.schema = ["FN","LN","EMAIL","PHONE"];
-                    //payload.data = [];
-                    //payload.data.push(["Bill","Billy","bill@bill.com","1234567890"]);
-                    //payload.data.push(["Bob","Bobby","bob@bob.com","5553332222"]);
-                    //payload.data.push(["Steve","Stevey","steve@steve.com","2223334444"]);
-                    //formData.append("payload",JSON.stringify(payload));
-
-                    httpRequest.send(formData);
-
-                    httpRequest.onreadystatechange=(e) => {
-                        // If the httpRequest state is DONE (4)
-                        if(httpRequest.readyState == 4) {
-                            console.log("Token Exchange Response: ");
-                            console.log("~~~~~~~~~~~~~~~~~~~~~~~~");
-                            console.log(httpRequest);
-                            console.log(httpRequest.responseText);
-                            //var data = null;
-                            //if(httpRequest.responseText) {
-                            //    // JSONifying the response:
-                            //    data = JSON.parse(httpRequest.responseText);
-                            //    console.log(data);
-                            //}
-                            console.log("~~~~~~~~~~~~~~~~~~~~~~~~");
-                        }
-                    }
+                    // After the user is signed in, advance the user to the next page
+                    this.fire('user-signed-in');
                 }
             }
 
