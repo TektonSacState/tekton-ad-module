@@ -10,9 +10,11 @@
             }
 
             #menuButtons {
-                text-align: center;
-                position: relative;
-                top: 20vh;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                height: 100%;
             }
 
             #sendUniverse {
@@ -33,6 +35,10 @@
             @media (max-width:320px)  {
                 /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
 
+                #menuButtons {
+                    flex-direction: column;
+                }
+
                 #sendUniverse {
                     margin-bottom: 5%;
                 }
@@ -44,6 +50,10 @@
 
             @media (max-width:480px)  {
                 /* smartphones, Android phones, landscape iPhone */
+
+                #menuButtons {
+                    flex-direction: column;
+                }
 
                 #sendUniverse {
                     margin-bottom: 5%;
