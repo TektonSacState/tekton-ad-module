@@ -30,13 +30,13 @@
                 width: 40%;
                 display: inline-block;
                 margin-right: 5%;
-                z-index: 1001;
+                z-index: 1000;
             }
 
             #toDate {
                 width: 40%;
                 display: inline-block;
-                z-index: 1001;
+                z-index: 1000;
             }
 
             #dateSelection {
@@ -44,19 +44,84 @@
                 justify-content: center;
             }
 
+            @media (max-width:320px)  {
+                /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+
+                #content {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                }
+
+                #dateSectionTitle {
+                    position: relative;
+                    left: 0;
+                    top: 0;
+                }
+
+                #title {
+                    margin-bottom: 0;
+                    margin-top: 0;
+                }
+
+                #clientSelection {
+                    margin: 0;
+                }
+
+                #dataSelection {
+                    margin: 0;
+                }
+            }
+
+            @media (max-width:480px)  {
+                /* smartphones, Android phones, landscape iPhone */
+
+                #content {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                }
+
+                #dateSectionTitle {
+                    position: relative;
+                    left: 0;
+                    top: 0;
+                    margin-bottom: 0;
+                }
+
+                #title {
+                    margin-bottom: 0;
+                    margin-top: 0;
+                }
+
+                #clientSelection {
+                    margin: 0;
+                }
+
+                #dataSelection {
+                    margin: 0;
+                }
+            }
+
         </style>
 
-        <h2 id = "title">Impressions</h2>
+        <div id="content">
+            <h2 id = "title">Impressions</h2>
 
-        <div id = "dataSelection">
-            <vaadin-combo-box id="clientSelection" label="Client:" items = "[[clients]]"></vaadin-combo-box>
-        </div>
+            <div id = "dataSelection">
+                <vaadin-combo-box id="clientSelection" label="Client:" items = "[[clients]]"></vaadin-combo-box>
+            </div>
 
-        <h4 id = "dateSectionTitle">Date Range:</h4>
+            <h4 id = "dateSectionTitle">Date Range:</h4>
 
-        <div id = "dateSelection">
-            <vaadin-date-picker id = "fromDate" label = "From:"></vaadin-date-picker>
-            <vaadin-date-picker id = "toDate" label = "To:"></vaadin-date-picker>
+            <div id = "dateSelection">
+                <vaadin-date-picker id = "fromDate" label = "From:"></vaadin-date-picker>
+                <vaadin-date-picker id = "toDate" label = "To:"></vaadin-date-picker>
+            </div>
         </div>
 
     </template>

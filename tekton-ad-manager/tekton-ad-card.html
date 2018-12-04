@@ -10,7 +10,7 @@
             }
 
             .card-heading {
-                width: 320px;
+
             }
 
             .card-content, .card-heading {
@@ -19,6 +19,36 @@
 
             .card-actions {
                 background: white;
+            }
+
+            @media (max-width:320px)  {
+                /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+
+                paper-card {
+                    width: 80%;
+                    margin: 5% auto 0 auto;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .card-actions {
+                    text-align: center;
+                }
+            }
+
+            @media (max-width:480px)  {
+                /* smartphones, Android phones, landscape iPhone */
+
+                paper-card {
+                    width: 80%;
+                    margin: 5% auto 0 auto;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .card-actions {
+                    text-align: center;
+                }
             }
         </style>
 
