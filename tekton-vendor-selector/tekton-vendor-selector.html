@@ -31,19 +31,28 @@
                 /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
 
                 #title {
-                    position: relative;
-                    top: 50px;
+                    margin: 0;
+                    margin-bottom: 5%;
                 }
 
                 #logos {
                     flex-direction: column;
                     align-items: center;
-                    top: 70px;
+                    top: 0;
                 }
 
                 #facebookLogo {
                     margin-right: 0;
-                    margin-top: 10%;
+                    width: 60%;
+                    height: 10%;
+                }
+
+                #content {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
                 }
             }
 
@@ -51,28 +60,39 @@
                 /* smartphones, Android phones, landscape iPhone */
 
                 #title {
-                    position: relative;
-                    top: 50px;
+                    margin: 0;
+                    margin-bottom: 5%;
                 }
 
                 #logos {
                     flex-direction: column;
                     align-items: center;
-                    top: 70px;
+                    top: 0;
                 }
 
                 #facebookLogo {
                     margin-right: 0;
-                    margin-top: 10%;
+                    width: 60%;
+                    height: 10%;
+                }
+
+                #content {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
                 }
             }
 
         </style>
 
-        <h1 id = "title">Vendor Selection</h1>
+        <div id="content">
+            <h1 id = "title">Vendor Selection</h1>
 
-        <div id="logos">
-            <img id="facebookLogo" src="logos/facebook-sign-in-button.png" on-tap="openAdMenu" alt="Facebook">
+            <div id="logos">
+                <img id="facebookLogo" src="logos/facebook-sign-in-button.png" on-tap="openAdMenu" alt="Facebook">
+            </div>
         </div>
 
     </template>
