@@ -179,6 +179,10 @@
                     type: Object,
                     notify: true
                 },
+                fbRef: {
+                    type: Object,
+                    notify: true
+                },
                 urlQueryParamsString: {
                     type: String,
                     notify: true,
@@ -193,7 +197,7 @@
                     type: Object,
                     notify: true,
                     value: {
-                        PDIConfig: {
+                        pdiConfig: {
                             apiKey: "8Ra1J1dhzBkoTrExaungULBFS-Awp-pTXJlApfyy9Vc=",
                             apiUrl: "https://authqa.the-pdi.com/",
                             authApiUrl: "https://authqa.the-pdi.com/",
@@ -201,8 +205,10 @@
                             authEndpoint: "auth/authorize",
                             authTokenExchangeEndpoint: "accessTokens"
                         },
-                        FBConfig: {
-                            test: "test"
+                        fbConfig: {
+                            appId: "265669694079249",
+                            adminAccessToken: "EAADxoAuZBQREBAHJusPzZChUd7VaJXdxV9mdZAEMqW37Lc2DJUJsTBBjJ7AoLYdcen8jmIgW6vM4zNBovIOCz5g0sCREenbyWBs0CwY8JRC1tSiZBZBpqYAaAgJ37ejUaXOAxTEwRHRgQRncwhFKpa9QCnZCI2UMZBgIZAxHqhKuu3ba483fttaTFDmTBYWoDoYZD",
+                            adminAccountID: "348692899271386"
                         },
                         dbConfig: {
                           authDomain: "tekton-ad-module.firebaseapp.com",
@@ -218,13 +224,24 @@
                     type: Object,
                     notify: true,
                     value: {
-                        userId: -1,
-                        pdiRequestToken: "",
-                        pdiAccessToken: "",
-                        isPdiRep: false
-
-                        //TODO - any FB account details
-
+                        // PDI Data
+                        pdi: {
+                            userId: -1,
+                            requestToken: "",
+                            accessToken: "",
+                            isRep: false
+                        },
+                        // Facebook Data
+                        fb: {
+                            accountAccessToken: "",
+                            accountId: "",
+                            desiredAudienceName: "",
+                            createdAudienceName: "",
+                            createdAudienceId: "",
+                            adAccounts: [],
+                            selectedAdAccount: {},
+                            REMOVETHIS_adAccountId: ""
+                        }
                     }
                 }
             },
@@ -307,6 +324,27 @@
                 // Store the DB Object for reading / writing
                 this.firebaseRef = this.$$('#query').ref;
 
+                // Setting up Facbeook JS SDK
+                window.fbAsyncInit = function() {
+                    var fbAppId = document.querySelector("tekton-container").appConfig.fbConfig.appId;
+                    FB.init({
+                        appId      : fbAppId,
+                        cookie     : true,
+                        xfbml      : true,
+                        version    : 'v3.1'
+                    });
+                    FB.AppEvents.logPageView();
+                    // Storing the FB Object reference for future use
+                    document.querySelector("tekton-container").fbRef = FB;
+                };
+                (function(d, s, id){
+                    var js, fjs = d.getElementsByTagName(s)[0];
+                    if (d.getElementById(id)) {return;}
+                    js = d.createElement(s); js.id = id;
+                    js.src = "https://connect.facebook.net/en_US/sdk.js";
+                    fjs.parentNode.insertBefore(js, fjs);
+                }(document, 'script', 'facebook-jssdk'));
+
                 // Converting the URL's query parameters to a JS Object
                 // NOTE - This code is copied from iron-query-params.html
                 var paramString = this.urlQueryParamsString;
@@ -332,13 +370,13 @@
                     // On success, advence the user to the next page.
 
                     // Storing the request token
-                    this.userData.pdiRequestToken = this.urlQueryParamsObject.request_token;
+                    this.userData.pdi.requestToken = this.urlQueryParamsObject.request_token;
 
                     // FIXME - Setting some temp user variables for now
-                    this.userData.pdiAccessToken = "access_token_received_from_PDI";
+                    this.userData.pdi.accessToken = "access_token_received_from_PDI";
                     // FIXME - parse whether or not this user is a PDI rep
                     // PDI Reps are allowed to view ad impressions for ALL clients
-                    this.userData.isPdiRep = true;
+                    this.userData.pdi.isRep = true;
 
                     // After the user is signed in, advance the user to the next page
                     this.fire('user-signed-in');

@@ -102,9 +102,9 @@
            openPDILoginPage: function() {
                var appConfig = document.querySelector("tekton-container").appConfig;
 
-               var apiUrl = appConfig.PDIConfig.authApiUrl;
-               var apiKey = appConfig.PDIConfig.apiKey;
-               var redirectUrl = appConfig.PDIConfig.authRedirectUrl;
+               var apiUrl = appConfig.pdiConfig.authApiUrl;
+               var apiKey = appConfig.pdiConfig.apiKey;
+               var redirectUrl = appConfig.pdiConfig.authRedirectUrl;
 
                var url = apiUrl + "auth/authorize";
                url += "?api_key=" + encodeURIComponent(apiKey);

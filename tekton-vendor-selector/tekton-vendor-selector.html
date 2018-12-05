@@ -71,7 +71,7 @@
         <h1 id = "title">Vendor Selection</h1>
 
         <div id="logos">
-            <img id="facebookLogo" src="logos/facebook-sign-in-button.png" on-tap="openAdSelector" alt="Facebook">
+            <img id="facebookLogo" src="logos/facebook-sign-in-button.png" on-tap="fbButtonLogin" alt="Facebook">
         </div>
 
     </template>
@@ -82,6 +82,97 @@
 
             properties: {
             },
+
+            ready: function() {
+                // If the user has an access token:
+                // TODO
+                //this.fbCheckLoginStatus();
+            },
+
+            fbCheckLoginStatus: function() {
+                console.log("Check login status: ");
+                FB.getLoginStatus(function(response) {console.log("hullo");});
+            },
+
+            fbButtonLogin: function() {
+                var curAuthToken = document.querySelector("tekton-container").userData.fb.accountAccessToken;
+                var FB = document.querySelector("tekton-container").fbRef;
+                FB.login(function(response) {
+                    // If we have an auth response:
+                    if(response.authResponse) {
+                        // Store the User's user account access token
+                        var authToken = response.authResponse.accessToken;
+                        document.querySelector("tekton-container").userData.fb.accountAccessToken = authToken;
+                        // Store the User's account ID
+                        var accountId = response.authResponse.userID;
+                        document.querySelector("tekton-container").userData.fb.accountId = accountId;
+                        // Get the user's Ad Accounts
+                        document.querySelector("tekton-vendor-selector").getAdAccounts();
+
+                        //TEKTONTODO - handle error case, and display a toast
+                    }
+                    //TEKTONTODO - remove this
+                    console.log("Facebook Login Response: ");
+                    console.log(response);
+                }, {scope: 'ads_management,ads_read', return_scopes: true});
+                // In the above call we are selecting the permissions: {ads_management, ads_read}
+                // for more info on permissions, see:
+                // https://developers.facebook.com/docs/facebook-login/permissions/
+            },
+
+            getAdAccounts: function() {
+                var appConfig = document.querySelector("tekton-container").appConfig;
+                var userData = document.querySelector("tekton-container").userData;
+
+                var userAccountId = userData.fb.accountId;
+                var accessToken = userData.fb.accountAccessToken;
+
+                // Creating the HTTP request
+                const httpRequest = new XMLHttpRequest();
+                // FB API Endpoint for retrieveing Ad Accounts:
+                // For available fields, see: https://developers.facebook.com/docs/marketing-api/reference/ad-account
+                httpRequest.open("GET","https://graph.facebook.com/v3.2/" + userAccountId + "/adaccounts?fields=['name','account_id','business']&access_token=" + accessToken);
+                httpRequest.send();
+
+                httpRequest.onreadystatechange=(e) => {
+                    // If the httpRequest state is DONE
+                    if(httpRequest.readyState == httpRequest.DONE) {
+                        console.log("Retrieving Ad Accounts Response:");
+                        console.log(httpRequest.responseText);
+                        var data = null;
+                        if(httpRequest.responseText) {
+                            data = JSON.parse(httpRequest.responseText);
+
+                            console.log(data);
+
+                            var userAdAccounts = [];
+                            // Constructing the ad accounts object:
+                            for(var i = 0; i < data.data.length; i++) {
+                                var adAccount = {};
+                                adAccount.name = data.data[i].name;
+                                adAccount.id = data.data[i].account_id;
+                                // If the Ad Account is associated with a business, store the business name and ID
+                                if(data.data[i].business != undefined) {
+                                    adAccount.businessID = data.data[i].business.id;
+                                    adAccount.businessName = data.data[i].business.name;
+                                }
+                                // Create the display name that the user will use to pick an Ad Account
+                                adAccount.displayName = adAccount.name + " (" + adAccount.id + ")";
+                                // Add the Ad Account to our list
+                                userAdAccounts.push(adAccount);
+                            }
+
+                            var userData = document.querySelector("tekton-container").userData;
+                            // Store the Ad Accounts
+                            userData.fb.adAccounts = userAdAccounts;
+                            // Advance to the next page
+                            document.querySelector("tekton-vendor-selector").openAdSelector();
+                        }
+                        //TEKTONTODO - if failure, show toast and error message
+                    }
+                }
+            },
+
 
             openAdSelector: function() {
                 this.fire('user-fb-signed-in');
