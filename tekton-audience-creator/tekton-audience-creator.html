@@ -2,9 +2,8 @@
 <link rel="import" href="../../bower_components/paper-input/paper-input.html">
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../../bower_components/paper-dropdown-menu/paper-dropdown-menu.js">
-<link rel="import" href="../../bower_components/paper-item/paper-item.js">
-<link rel="import" href="../../bower_components/paper-listbox/paper-listbox.js">
+<link rel="import" href="../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+
 
 <dom-module id="tekton-audience-creator">
     <template>
@@ -16,6 +15,11 @@
                 color: #484848;
             }
             #audienceName {
+                width: 300px;
+                margin: 0 auto;
+                margin-top: 10%;
+            }
+            #adAccoutSelection {
                 width: 300px;
                 margin: 0 auto;
                 margin-top: 10%;
@@ -48,23 +52,8 @@
 
         <h1 id = "title">Enter New Facebook Audience Name</h1>
         <paper-input id="audienceName" label="New Facebook Audience Name" value="{{audienceName}}"></paper-input>
-        <paper-dropdown-menu label="Choose your Ad Account">
-            <paper-listbox slot="dropdown-content" selected="1">
-                <paper-item>Test</paper-item>
-                <paper-item>Test1</paper-item>
-                <paper-item>Test2</paper-item>
-                <paper-item>Test3</paper-item>
-            </paper-listbox>
-        </paper-dropdown-menu>
-        <hr/>
-        <paper-dropdown-menu label="Dinosaurs">
-       <paper-listbox slot="dropdown-content" selected="1">
-         <paper-item>allosaurus</paper-item>
-         <paper-item>brontosaurus</paper-item>
-         <paper-item>carcharodontosaurus</paper-item>
-         <paper-item>diplodocus</paper-item>
-       </paper-listbox>
-     </paper-dropdown-menu>
+        <vaadin-combo-box id="adAccoutSelection" label="Ad Account:" items = "[[clientAdAccounts]]" value="{{test}}"></vaadin-combo-box>
+        <vaadin-select label="Choose your Ad Account"></vaadin-select>`
         <div id="createAudienceButtonDiv">
             <template is="dom-if" if="[[canAdvance]]">
                 <paper-button id="createAudienceButton" on-tap="getAdAccount">CREATE FACEBOOK AUDIENCE</paper-button>
@@ -89,9 +78,19 @@
                     notify: true,
                     observer: 'checkIfCanAdvance'
                 },
+                clientAdAccounts: {
+                    type: Object,
+                    value: [],
+                    notify: true,
+                },
                 canAdvance: {
                     type: Boolean,
                     value: false,
+                    notify: true
+                },
+                test: {
+                    type: String,
+                    value: "",
                     notify: true
                 }
             },

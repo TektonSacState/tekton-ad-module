@@ -3,6 +3,9 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/vaadin-combo-box/vaadin-combo-box.html">
 <link rel="import" href="../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid-column.html">
+
 
 <dom-module id="tekton-impressions">
     <template>
@@ -78,11 +81,39 @@
             <vaadin-date-picker id = "toDate" label = "To:" value="{{toDate}}"></vaadin-date-picker>
         </div>
 
-        <div id = "buttonDiv">
+
+
+        <div id="createAudienceButtonDiv">
+            <template is="dom-if" if="[[canAdvance]]">
+                        <br/>
+                        <br/>
+                        <br/>
+                        <br/>
+                <!--<vaadin-combo-box id="impressions" label="Universe:" items = "[[test]]" value="{{test}}"></vaadin-combo-box>-->
+                           <!--<paper-button id="createAudienceButton" on-tap="getAdAccount">CREATE FACEBOOK AUDIENCE</paper-button>-->
+                       <vaadin-grid id="universeGrid" items='[[test]]'>
+                           <vaadin-grid-column width="100px" flex-grow="0">
+                               <!--<template class="header">#</template>-->
+                               <!--<template>[[plusOne(index)]]</template>-->
+                           </vaadin-grid-column>
+
+                           <vaadin-grid-column flex-grow="1">
+                               <template class="header">Universe</template>
+                               <template>[[item.name]]</template>
+                           </vaadin-grid-column>
+                           <vaadin-grid-column flex-grow="1">
+                               <template class="header">Impressions</template>
+                               <template>[[item.impressions]]</template>
+                           </vaadin-grid-column>
+                       </vaadin-grid>
+            </template>
+        </div>
+
+        <!--<div id = "buttonDiv">
             <template is="dom-if" if="[[canAdvance]]">
                 <paper-button id="viewImpressions" on-tap="generateImpressionsReport">View Impressions</paper-button>
             </template>
-        </div>
+        </div>-->
 
 
     </template>
@@ -93,7 +124,7 @@
             properties: {
                 clients: {
                     type: Array,
-                    value: ["Aaron", "Luke", "Luis", "Ryan", "EJ", "David", "Jake"],
+                    value: ["John Smith","Aaron", "Luke", "Luis", "Ryan", "EJ", "David", "Jake"],
                     notify: false,
                 },
                 canAdvance: {
@@ -118,9 +149,19 @@
                     value: undefined,
                     notify: true,
                     observer: 'checkIfCanAdvance'
+                },
+                test: {
+                    type: Object,
+                    notify: true,
+                    value: [
+                        {name: "Universe 1", impressions: "21312"},
+                        {name: "Universe 2", impressions: "232"},
+                        {name: "Universe 3", impressions: "742"},
+                        {name: "Universe 4", impressions: "282"},
+                        {name: "Universe 5", impressions: "73424"}
+                    ]
                 }
             },
-
             // Called when one of the above variables changes
             checkIfCanAdvance: function(newValue, oldValue) {
                 // If all three fields are empty
