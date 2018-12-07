@@ -1,7 +1,6 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
 
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
-<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 <link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
 <link rel="import" href="../bower_components/vaadin-grid/vaadin-grid-column.html">
 
@@ -49,11 +48,6 @@
                 --vaadin-grid-body-row-active-cell: {
                     background-color: #bcbcbc;
                 };
-            }
-
-            #toast {
-                --paper-toast-background-color: red;
-                --paper-toast-color: white;
             }
 
             @media (max-width:320px)  {
@@ -170,11 +164,14 @@
 
             openVendorSelector: function() {
                 if (this.$.universeGrid.activeItem !== null) {
+                    if(document.querySelector("tekton-container").fbRef != undefined)
+                    {
+                        document.querySelector("tekton-vendor-selector").fbApiLoaded = true;
+                    }
                     this.fire('next-tapped');
                 } else {
-                    this.$.toast.open();
+                    document.querySelector("tekton-container").showErrorToast("Please Select A Universe");
                 }
-
             }
         });
     </script>

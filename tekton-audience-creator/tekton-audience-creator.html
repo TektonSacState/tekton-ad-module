@@ -3,6 +3,7 @@
 <link rel="import" href="../../bower_components/paper-input/paper-textarea.html">
 <link rel="import" href="../../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/vaadin-combo-box/vaadin-combo-box.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 
 
 <dom-module id="tekton-audience-creator">
@@ -19,7 +20,7 @@
                 margin: 0 auto;
                 margin-top: 10%;
             }
-            #adAccoutSelection {
+            #adAccountSelection {
                 width: 300px;
                 margin: 0 auto;
                 margin-top: 10%;
@@ -48,18 +49,34 @@
                 font-family: Arial;
                 margin: 10% auto 0 auto;
             }
+            #adCreationProgressSpinner {
+                display: flex;
+                margin: auto auto auto auto;
+            }
+            #spinnerDiv {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                height: 100%;
+            }
         </style>
 
-        <h1 id = "title">Enter New Facebook Audience Name</h1>
-        <paper-input id="audienceName" label="New Facebook Audience Name" value="{{audienceName}}"></paper-input>
-        <vaadin-combo-box id="adAccoutSelection" label="Ad Account:" items = "[[clientAdAccounts]]" value="{{test}}"></vaadin-combo-box>
-        <vaadin-select label="Choose your Ad Account"></vaadin-select>`
-        <div id="createAudienceButtonDiv">
-            <template is="dom-if" if="[[canAdvance]]">
-                <paper-button id="createAudienceButton" on-tap="getAdAccount">CREATE FACEBOOK AUDIENCE</paper-button>
-            </template>
-        </div>
+        <template is="dom-if" if="[[!inProgress]]">
+            <h1 id = "title">Enter New Facebook Audience Name</h1>
+            <paper-input id="audienceName" label="New Facebook Audience Name" value="{{audienceName}}"></paper-input>
+            <vaadin-combo-box id="adAccountSelection" label="Ad Account:" items=[[clientAdAccounts]] value={{chosenAdAccount}}></vaadin-combo-box>
 
+            <div id="createAudienceButtonDiv">
+                <template is="dom-if" if="[[canAdvance]]">
+                    <paper-button id="createAudienceButton" on-tap="createAudience">CREATE FACEBOOK AUDIENCE</paper-button>
+                </template>
+            </div>
+        </template>
+        <template is="dom-if" if="[[inProgress]]">
+            <div id="spinnerDiv">
+                <paper-spinner id="adCreationProgressSpinner" active></paper-spinner>
+            </div>
+        </template>
     </template>
 
     <script>
@@ -72,30 +89,36 @@
                     notify: true,
                     observer: 'checkIfCanAdvance'
                 },
+                clientAdAccounts: {
+                    type: Object,
+                    value: [],
+                    notify: true
+                },
                 chosenAdAccount: {
-                    type: String,//TEKTONTODO - should this be string or object?
+                    type: String,
                     value: "",
                     notify: true,
                     observer: 'checkIfCanAdvance'
                 },
-                clientAdAccounts: {
-                    type: Object,
-                    value: [],
-                    notify: true,
-                },
                 canAdvance: {
                     type: Boolean,
-                    value: false,
-                    notify: true
+                    notify: true,
+                    value: false
                 },
-                test: {
-                    type: String,
-                    value: "",
-                    notify: true
+                inProgress: {
+                    type: Boolean,
+                    notify: true,
+                    value: false
                 }
             },
 
             checkIfCanAdvance: function(newValue, oldValue) {
+                // Ensure that the user has chosen an Ad Account
+                //TEKTONTODO - also, do we want to chekc that the chosen ad account hsa a business?
+                if(this.chosenAdAccount == "") {
+                    this.canAdvance = false;
+                    return;
+                }
                 //TEKTONTODO - ensure only alpha-numeric characters
                 // Only allow audience names that:
                 // - are longer than 4 characters
@@ -106,66 +129,30 @@
                     return;
                 }
 
-                // Ensure that the user has chosen an Ad Account
-                //TEKTONTODO - also, do we want to chekc that the chosen ad account hsa a business?
-
                 this.canAdvance = true;
                 return;
             },
 
-            // Step 1: Get the user's Facebook Ad Account ID
-            /*getAdAccount: function() {
-                var appConfig = document.querySelector("tekton-container").appConfig;
-                var userData = document.querySelector("tekton-container").userData;
-
-                var userAccountId = userData.fb.accountId;
-                var accessToken = userData.fb.accountAccessToken;
-
-                // Creating the HTTP request
-                const httpRequest = new XMLHttpRequest();
-                httpRequest.open("GET","https://graph.facebook.com/v3.2/" + userAccountId + "/adaccounts?access_token=" + accessToken);
-                //var formData = new FormData();
-                //formData.append("access_token",accessToken);
-                //httpRequest.send(formData);
-                httpRequest.send();
-
-                httpRequest.onreadystatechange=(e) => {
-                    // If the httpRequest state is DONE
-                    if(httpRequest.readyState == httpRequest.DONE) {
-                        console.log("Retrieving Ad Accounts Response:");
-                        console.log(httpRequest.responseText);
-                        var data = null;
-                        if(httpRequest.responseText) {
-                            data = JSON.parse(httpRequest.responseText);
-
-                            console.log(data);
-
-                            var userData = document.querySelector("tekton-container").userData;
-                            // Retrieve the first ad account from the list
-                            userData.fb.adAccountId = data.data[0].account_id;
-
-                            // Move on to step 2:
-                            //document.querySelector("tekton-audience-creator").createAudience();
-
-                        }
-                        //TEKTONTODO - if failure, show toast and error message
-                    }
-                }
-            },*/
-
-            // Step 2: Create a new audience on the PDI's Facebook Business Manager Ad Account
+            // Step 1: Create a new audience on the PDI's Facebook Business Manager Ad Account
             createAudience: function() {
+                this.inProgress = true;
+
                 var appConfig = document.querySelector("tekton-container").appConfig;
                 var userData = document.querySelector("tekton-container").userData;
-                //TEKTONTODO - Add in some PDI user ID to this Audience name
+
+                // TODO - You should add the client's PDI user ID to the name of the audience so that
+                // you can easily discern who this audience was created for on Facebook, in the event
+                // that PDI needs to revoke access to a universe/audience from a specific client.
                 var newAudienceName = "PDI Custom Audience - " + this.audienceName;
 
                 // Store the desired custom audience name in the user data
                 userData.fb.desiredAudienceName = this.audienceName;
                 userData.fb.createdAudienceName = newAudienceName;
+                // Also store it so that the finished screen can reference it
+                document.querySelector("tekton-container").createdAudienceName = newAudienceName;
 
                 var accessToken = appConfig.fbConfig.adminAccessToken;
-                var adAccountID = appConfig.fbConfig.adminAccountID;
+                var adAccountID = appConfig.fbConfig.adminAccountId;
 
                 // Creating the HTTP request
                 const httpRequest = new XMLHttpRequest();
@@ -173,7 +160,10 @@
                 var formData = new FormData();
                 formData.append('name',newAudienceName);
                 formData.append('subtype','CUSTOM');
-                //TEKTONTODO - Add in some PDI user ID to this Audience name
+
+                // TODO - You should append a note to the "description" indicating which PDI client this audience was created for
+                // So that you can easily discern who this audience was created for on Facebook, in the event
+                // that PDI needs to revoke access to a universe/audience from a specific client.
                 formData.append("description","Created for user with FBID: " + userData.accountId);
                 formData.append("customer_file_source","USER_PROVIDED_ONLY");
                 formData.append("access_token",accessToken);
@@ -182,25 +172,37 @@
                 httpRequest.onreadystatechange=(e) => {
                     // If the httpRequest state is DONE
                     if(httpRequest.readyState == httpRequest.DONE) {
+                        //TEKTONTODO remove this
                         console.log("Create Audience Response:");
                         console.log(httpRequest.responseText);
                         var data = null;
                         if(httpRequest.responseText) {
                             data = JSON.parse(httpRequest.responseText);
+                            //TEKTONTODO remove this
                             console.log(data);
 
+                            // Check if there was an error
+                            if(data.error) {
+                                document.querySelector("tekton-container").showErrorToast("Error - Unable to Create Facebook Audience.\n (Facebook Error - \"" + data.error.message + "\")");
+                                this.fire('back-to-main-page');
+                                return;
+                            }
+
+                            // Store the created audience ID
                             var userData = document.querySelector("tekton-container").userData;
                             userData.fb.createdAudienceId = data.id;
 
-                            // Move on to step 3:
+                            // Move on to step 2:
                             document.querySelector("tekton-audience-creator").populateAudience();
+                        } else {
+                            document.querySelector("tekton-container").showErrorToast("Error - Unable to Create Facebook Audience.\n (Received invalid response from Facebook API)");
+                            this.fire('back-to-main-page');
                         }
-                        //TEKTONTODO - if failure, show toast and error message
                     }
                 }
             },
 
-            // Step 3: Make a request to PDI backend so that they fill in the details
+            // Step 2: Make a request to PDI backend so that they fill in the details
             populateAudience: function() {
 
                 //TODO - Make a request to PDI backend so they send the universe data to the desired universe
@@ -212,31 +214,20 @@
 
                 // TODO - proceeed to Step 4 after we receive a successful respones:
                 this.shareAudience();
-
-                return 1;
             },
 
             // Step 4: Request to share the audience with the Client's Facebook ad account
             shareAudience: function() {
-
-                // FIXME
-                //POST 23843248712210610/adaccounts?adaccounts=[342625326487081]&relationship_type[]="agency"
-                //adminCustomAudienceID + "/adaccounts?adaccounts=["+ userAdAccountID +"]&relationship_type[]="+ "agency" +""
-                //POST 23843248712210610/adaccounts?adaccounts=[2234879156797393]&relationship_type=["Audience Info Provider"] (this works!)
                 var appConfig = document.querySelector("tekton-container").appConfig;
                 var userData = document.querySelector("tekton-container").userData;
 
+                // Storing the chosen ad account:
+                userData.fb.selectedAdAccount = this.chosenAdAccount;
+
                 // Retrieving the parameters that we need to send:
                 var newAudienceId = userData.fb.createdAudienceId;
-                var userAdAccount = userData.fb.adAccountId;
+                var userAdAccount = userData.fb.selectedAdAccount;
                 var accessToken = appConfig.fbConfig.adminAccessToken;
-
-                // Printing the three params:
-                console.log("Audience Id: " + newAudienceId);
-                console.log("userAdAccount: " + userAdAccount);
-                console.log("accessToken: " + accessToken);
-
-                console.log("URL: \"https://graph.facebook.com/v3.2/" + newAudienceId + "/adaccounts?adaccounts=[" + userAdAccount + "]&relationship_type=[\"Audience Info Provider\"]\"");
 
                 // Creating the HTTP request
                 const httpRequest = new XMLHttpRequest();
@@ -248,46 +239,79 @@
                 httpRequest.onreadystatechange=(e) => {
                     // If the httpRequest state is DONE
                     if(httpRequest.readyState == httpRequest.DONE) {
+                        //TEKTONTODO remove this
                         console.log("Share Audience Response:");
                         console.log(httpRequest.responseText);
                         var data = null;
                         if(httpRequest.responseText) {
                             data = JSON.parse(httpRequest.responseText);
+                            //TEKTONTODO remove this
                             console.log(data);
 
-                            var userData = document.querySelector("tekton-container").userData;
-                            userData.fb.createdAudienceId = data.id;
+                            // Check if there was an error
+                            if(data.error) {
+                                document.querySelector("tekton-container").showErrorToast("Error - Unable to Share Facebook Audience.\n (Facebook Error - \"" + data.error.message + "\")");
+                                this.fire('back-to-main-page');
+                                return;
+                            }
 
-                            // Move on to step 5:
+                            // Store this share request in the database:
+                            var userData = document.querySelector("tekton-container").userData;
+                            document.querySelector("tekton-container").recordClientAdAudienceShare(userData.fb.createdAudienceId, userData.fb.createdAudienceName, userData.fb.selectedAdAccount);
+
+                            // Now that the transfer is finished:
+                            // Asynchronously request access to the client's ad account:
                             document.querySelector("tekton-audience-creator").requestAdAccountAccess();
+                            // and show the "finished" screen
+                            this.fire('submit-tapped');
+                        } else {
+                            document.querySelector("tekton-container").showErrorToast("Error - Unable to Share Facebook Audience.\n (Received invalid response from Facebook API)");
+                            this.fire('back-to-main-page');
                         }
-                        //TEKTONTODO - if failure, show toast and error message
                     }
                 }
-
-                //TEKTONTODO
-                this.requestAdAccountAccess();
-                return 1;
             },
-            // Step 5: Request read-only access to the Client's Facebook ad account for billing
+
+            // Step 3: Request read-only access to the Client's Facebook ad account for billing
             requestAdAccountAccess: function() {
-                //303441093715051/client_ad_accounts?adaccount_id=act_342625326487081&permitted_tasks=['ANALYZE']
+                var appConfig = document.querySelector("tekton-container").appConfig;
+                var userData = document.querySelector("tekton-container").userData;
 
-                //Business ID: 303441093715051
-                //Business Ad Account: 348692899271386
-                //Business Page ID: 391222021621012
-                //App ID: 265669694079249
-                //TEKTONTODO
+                // Retrieving the parameters that we need to send:
+                var businessId = appConfig.fbConfig.adminBusinessId;
+                var accessToken = appConfig.fbConfig.adminAccessToken;
+                var clientAdAccountId = this.chosenAdAccount;
 
+                // Creating the HTTP request
+                const httpRequest = new XMLHttpRequest();
+                httpRequest.open("POST","https://graph.facebook.com/v3.2/" + businessId + "/client_ad_accounts?adaccount_id=act_" + clientAdAccountId + "&permitted_tasks=['ANALYZE']");
+                var formData = new FormData();
+                formData.append("access_token",accessToken);
+                httpRequest.send(formData);
 
+                httpRequest.onreadystatechange=(e) => {
+                    // If the httpRequest state is DONE
+                    if(httpRequest.readyState == httpRequest.DONE) {
+                        //TEKTONTODO remove this
+                        console.log("Request Ad Account Access Response:");
+                        console.log(httpRequest.responseText);
+                        var data = null;
+                        if(httpRequest.responseText) {
+                            data = JSON.parse(httpRequest.responseText);
+                            //TEKTONTODO remove this
+                            console.log(data);
 
-                return 1;
+                            // Check if there was an error
+                            if(data.error) {
+                                document.querySelector("tekton-container").showErrorToast("Error - Unable to Request read access to Client Ad Account.\n (Facebook Error - \"" + data.error.message + "\")");
+                                return;
+                            }
+                        } else {
+                            document.querySelector("tekton-container").showErrorToast("Error - Unable to Request read access to Client Ad Account.\n (Received invalid response from Facebook API)");
+                        }
+                    }
+                }
             }
-
-            // Finished. Take the user to the finished screen.
-            //TEKTONTODO - display created audience name on their home-page, along with instructions
-            //this.fire('submit-tapped');
-
         });
     </script>
 </dom-module>

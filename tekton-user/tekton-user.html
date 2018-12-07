@@ -58,7 +58,10 @@
 
         <div id="menuButtons">
             <paper-button id = "sendUniverse" on-tap="openUniverseSelection">Send Universe</paper-button>
-            <paper-button id = "viewImpressions" on-tap="openImpressions">View Impressions</paper-button>
+
+            <template is="dom-if" if=[[pdirep]]>
+                <paper-button id = "viewImpressions" on-tap="openImpressions">View Impressions</paper-button>
+            </template>
         </div>
 
     </template>
@@ -68,7 +71,11 @@
             is: "tekton-user",
 
             properties: {
-
+                pdirep: {
+                    type: Boolean,
+                    value: false,
+                    notify: true
+                }
             },
 
             openUniverseSelection: function() {

@@ -5,6 +5,7 @@
 <link rel="import" href="../bower_components/polymerfire/firebase-auth.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-app.html">
 <link rel="import" href="../bower_components/polymerfire/firebase-query.html">
+<link rel="import" href="../bower_components/paper-toast/paper-toast.html">
 
 
 <link rel="import" href="../tekton-login/tekton-login.html">
@@ -56,6 +57,7 @@
             }
 
             #finished {
+                font-family: arial;
                 display: flex;
                 flex-direction: column;
                 align-items: center;
@@ -65,6 +67,15 @@
 
             #pages {
                 height: 100%;
+            }
+
+            div.noWrap {
+                display: inline;
+            }
+
+            #errorToast {
+                --paper-toast-background-color: red;
+                --paper-toast-color: white;
             }
 
             @media (max-width:320px)  {
@@ -129,29 +140,28 @@
             <iron-location query="{{urlQueryParamsString}}"></iron-location>
 
             <template is="dom-if" if="[[canSignOut]]">
-                <paper-button id = "signOut" on-tap="signOut">Sign Out</paper-button>
+                <paper-button id="signOut" on-tap="signOut">Sign Out</paper-button>
             </template>
 
             <iron-pages id="pages" selected="0">
-                <tekton-login id = "login"></tekton-login>
-                <tekton-user id = "user"></tekton-user>
+                <tekton-login id="login"></tekton-login>
+                <tekton-user id="user" pdirep=[[isPdiRep]]></tekton-user>
                 <tekton-universe-selector id="universeSelector"></tekton-universe-selector>
                 <tekton-vendor-selector id="vendorSelector"></tekton-vendor-selector>
-                <tekton-audience-creator id="audienceCreator" clientAdAccounts="[[userData.fb.adAccounts]]"></tekton-audience-creator>
+                <tekton-audience-creator id="audienceCreator"></tekton-audience-creator>
                 <div id="finished">
-                    <b id="done">Done!</b>
-                    <b id="submitted">Universe submitted to Facebook.</b>
+                    <b>The new Facebook Ad Audience has been shared with your Facebook account.</b>
+                    <div>To use the Custom Ad Audience for a Facebook ad, go to facebook.com and accept the share request.</div>
+                    <div>Then use the audience with the name "<b><div class="noWrap">[[createdAudienceName]]</div></b>" when creating a Facebook Ad.</div>
                 </div>
                 <tekton-impressions id="impressions"></tekton-impressions>
-                <div id="viewImpressions">
-                    <b id="impressionsDone">Done!</b>
-                    <b id="impressionsGenerated">Impressions Finished Generating.</b>
-                </div>
             </iron-pages>
 
             <template is="dom-if" if="[[canGoBack]]">
                 <paper-button id="back" on-tap="goBack">«</paper-button>
             </template>
+
+            <paper-toast id="errorToast" text="" duration="5000"></paper-toast>
 
         </div>
     </template>
@@ -159,7 +169,6 @@
     <script>
         Polymer({
             is: "tekton-container",
-
             properties: {
                 canSignOut: {
                     type: Boolean,
@@ -181,7 +190,8 @@
                 },
                 fbRef: {
                     type: Object,
-                    notify: true
+                    notify: true,
+                    value: undefined
                 },
                 urlQueryParamsString: {
                     type: String,
@@ -208,7 +218,8 @@
                         fbConfig: {
                             appId: "265669694079249",
                             adminAccessToken: "EAADxoAuZBQREBAHJusPzZChUd7VaJXdxV9mdZAEMqW37Lc2DJUJsTBBjJ7AoLYdcen8jmIgW6vM4zNBovIOCz5g0sCREenbyWBs0CwY8JRC1tSiZBZBpqYAaAgJ37ejUaXOAxTEwRHRgQRncwhFKpa9QCnZCI2UMZBgIZAxHqhKuu3ba483fttaTFDmTBYWoDoYZD",
-                            adminAccountID: "348692899271386"
+                            adminAccountId: "348692899271386",
+                            adminBusinessId: "303441093715051"
                         },
                         dbConfig: {
                           authDomain: "tekton-ad-module.firebaseapp.com",
@@ -235,14 +246,22 @@
                         fb: {
                             accountAccessToken: "",
                             accountId: "",
+                            accountName: "",
                             desiredAudienceName: "",
                             createdAudienceName: "",
                             createdAudienceId: "",
                             adAccounts: [],
-                            selectedAdAccount: {},
-                            REMOVETHIS_adAccountId: ""
+                            selectedAdAccount: ""
                         }
                     }
+                },
+                isPdiRep: {
+                    type: Boolean,
+                    notify: true
+                },
+                createdAudienceName: {
+                    type: String,
+                    notify: true
                 }
             },
 
@@ -258,8 +277,8 @@
                 'submit-tapped': 'sendUniverse',
                 'sign-out-tapped': 'signOut',
                 'select-impressions-tapped': 'toggleSelectImpressions',
-                'view-impressions-tapped': 'generateImpressions',
-                'back-user-tapped': 'toggleLogin'
+                'back-user-tapped': 'toggleLogin',
+                'back-to-main-page': 'returnToMainPage'
             },
 
             dataChanged: function(newData, oldData) {
@@ -287,24 +306,43 @@
                 this.$$('#pages').selected = "4";
                 this.canSignOut = true;
                 this.canGoBack = true;
+                document.querySelector("tekton-audience-creator").inProgress = false;
+                document.querySelector("tekton-audience-creator").finished = false;
             },
 
             toggleFinished: function() {
                 this.$$('#pages').selected = "5";
                 this.canSignOut = true;
                 this.canGoBack = true;
+                this.createdAudienceName = this.userData.fb.createdAudienceName;
             },
 
             toggleSelectImpressions: function() {
                 this.$$('#pages').selected = "6";
                 this.canSignOut = true;
                 this.canGoBack = true;
+
+                document.querySelector("tekton-impressions").inProgress = false;
+                document.querySelector("tekton-impressions").finished = false;
+                // Setting up the data for the impressions counter:
+                var clientsList = [];
+
+                // Building a list of all clients
+                for(var i = 0; i < this.firebaseQueryData.length; i++) {
+                    var name = this.firebaseQueryData[i].fbAccountName;
+                    var id = this.firebaseQueryData[i].fbAccountId;
+
+                    clientsList.push({"label": name, "value": id});
+                }
+
+                document.querySelector("tekton-impressions").clients = clientsList;
+
             },
 
             goBack: function() {
                 var page = this.$$('#pages').selected;
 
-                if (page === "2" || page === "5" || page === "6" || page ==="7") {
+                if (page === "2" || page === "5" || page === "6") {
                     this.$$('#pages').selected = "1";
                     this.canGoBack = false;
                 } else if (page === "4") {
@@ -312,6 +350,11 @@
                 } else if (page === "3") {
                     this.$$('#pages').selected = "2";
                 }
+            },
+
+            returnToMainPage: function() {
+                this.$$('#pages').selected = "1";
+                this.canGoBack = false;
             },
 
             signOut: function() {
@@ -372,31 +415,99 @@
                     // Storing the request token
                     this.userData.pdi.requestToken = this.urlQueryParamsObject.request_token;
 
-                    // FIXME - Setting some temp user variables for now
-                    this.userData.pdi.accessToken = "access_token_received_from_PDI";
-                    // FIXME - parse whether or not this user is a PDI rep
+                    // TODO - Exchange the above request token for an access token
+                    var accessToken = "FIXME";
+
+                    // Store the accessToken
+                    // You can use
+                    // document.querySelector("tekton-container").userData.pdi.accessToken
+                    // To retrieve the PDI access token from anywhere in the app
+                    this.userData.pdi.accessToken = accessToken;
+
+                    // TODO - parse whether or not this user is a PDI rep
                     // PDI Reps are allowed to view ad impressions for ALL clients
                     this.userData.pdi.isRep = true;
+
+                    // Update the isPdiRep property
+                    this.isPdiRep = this.userData.pdi.isRep;
 
                     // After the user is signed in, advance the user to the next page
                     this.fire('user-signed-in');
                 }
             },
-
             sendUniverse: function() {
                 console.log("Send Universe Function executed.");
                 this.$$('#pages').selected = "5";
                 this.canSignOut = true;
                 this.canGoBack = true;
             },
-            generateImpressions: function() {
-                console.log("Generate Impressions Function executed.");
-                this.$$('#pages').selected = "7";
-                this.canSignOut = true;
-                this.canGoBack = true;
+            showErrorToast: function(message) {
+                this.$.errorToast.text = message;
+                this.$.errorToast.open();
             },
+            // Store this share request in the database:
+            recordClientAdAudienceShare: function(newAudienceId, newAudienceName, destAdAccount) {
+
+                // Prepare all necessary parameters:
+                // TODO - update these values once we can retrieve them from PDI's APIs
+                var pdiAccountId = "TODO";
+                var pdiAccountName = "TODO";
+
+                var fbAccountId = this.userData.fb.accountId;
+                var fbAccountName = this.userData.fb.accountName;
 
 
+                // Check if this user is already in the DB, so we don't overwrte existing data
+                var index = -1;
+                for(var i = 0; i < this.firebaseQueryData.length; i++) {
+                    //FIXME - for now we are storing the user by their FB account ID
+                    // We may want to store them by their PDI account ID instead
+                    if(this.firebaseQueryData[i]["$key"] == fbAccountId) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                // Construct the user's list of shared universes
+                var newSharedUniverses = [];
+
+                // If this user already has an entry, add all of the previously shared universes to the new list:
+                if(index != -1) {
+                    var oldEntry = this.firebaseQueryData[index];
+                    for(var i = 0; i < oldEntry.sharedUniverses.length; i++) {
+                        newSharedUniverses.push(oldEntry.sharedUniverses[i]);
+                    }
+                }
+
+                // Construct the new shared universe object
+                var newSharedUniverse = {
+                    "pdiUniverseId": "TODO",
+                    "pdiUniverseName": "TODO",
+                    "fbCustomAudienceName": newAudienceName,
+                    "fbCustomAudienceId": newAudienceId,
+                    "fbRecipientAdAccountId": destAdAccount,
+                    "dateShared": (new Date()).toString()
+                };
+
+                // Add it to the new shared universes list
+                newSharedUniverses.push(newSharedUniverse);
+
+
+                // Store the new database entry:
+                var query = document.querySelector("tekton-container").$$('#query')
+
+                var newEntry = {};
+                newEntry[fbAccountId] = {
+                    //TODO Once you add access to PDI APIs, add in these fields
+                    // Also, you can add any other fields here you'd like to store records for (like user's email, etc.)
+                    "pdiAccountId": "TODO",
+                    "pdiAccountName": "TODO",
+                    "fbAccountId": fbAccountId,
+                    "fbAccountName": fbAccountName,
+                    "sharedUniverses": newSharedUniverses
+                };
+                this.$$('#query').ref.update( newEntry );
+            }
         });
     </script>
 </dom-module>
