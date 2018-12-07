@@ -322,20 +322,28 @@
                 this.canSignOut = true;
                 this.canGoBack = true;
 
+
+                // Setting up the data for the impressions counter:
                 document.querySelector("tekton-impressions").inProgress = false;
                 document.querySelector("tekton-impressions").finished = false;
-                // Setting up the data for the impressions counter:
-                var clientsList = [];
+                document.querySelector("tekton-impressions").canAdvance = false;
+                document.querySelector("tekton-impressions").client = "";
+                document.querySelector("tekton-impressions").fromDate = "";
+                document.querySelector("tekton-impressions").toDate = "";
+
+                // Safely clearing these arrays
+                while(document.querySelector("tekton-impressions").sharedUniverses.length > 0) {
+                    document.querySelector("tekton-impressions").sharedUniverses.shift();
+                }
 
                 // Building a list of all clients
+                var clients = [];
                 for(var i = 0; i < this.firebaseQueryData.length; i++) {
                     var name = this.firebaseQueryData[i].fbAccountName;
                     var id = this.firebaseQueryData[i].fbAccountId;
-
-                    clientsList.push({"label": name, "value": id});
+                    clients.push({"label": name, "value": id});
                 }
-
-                document.querySelector("tekton-impressions").clients = clientsList;
+                document.querySelector("tekton-impressions").clients = clients;
 
             },
 

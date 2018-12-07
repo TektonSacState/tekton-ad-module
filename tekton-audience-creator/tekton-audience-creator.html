@@ -114,18 +114,18 @@
 
             checkIfCanAdvance: function(newValue, oldValue) {
                 // Ensure that the user has chosen an Ad Account
-                //TEKTONTODO - also, do we want to chekc that the chosen ad account hsa a business?
                 if(this.chosenAdAccount == "") {
                     this.canAdvance = false;
                     return;
                 }
-                //TEKTONTODO - ensure only alpha-numeric characters
                 // Only allow audience names that:
                 // - are longer than 4 characters
                 // - are shorter than 41 characters
                 // - only include letters, numbers, spaces, underscores, or minus signs
                 if(this.audienceName.length < 4 || this.audienceName.length > 40 || (!this.audienceName.match(/^[0-9a-zA-Z _-]*$/))) {
                     this.canAdvance = false;
+                    if(document.querySelector("tekton-container") != undefined)
+                        document.querySelector("tekton-container").showErrorToast("Error - Custom audience name must be between 4 and 40 characters, and may only include letters, numbers, spaces, underscores, and minus signs.");
                     return;
                 }
 
@@ -170,16 +170,11 @@
                 httpRequest.send(formData);
 
                 httpRequest.onreadystatechange=(e) => {
-                    // If the httpRequest state is DONE
+                    // If the httpRequest testate is DONE
                     if(httpRequest.readyState == httpRequest.DONE) {
-                        //TEKTONTODO remove this
-                        console.log("Create Audience Response:");
-                        console.log(httpRequest.responseText);
                         var data = null;
                         if(httpRequest.responseText) {
                             data = JSON.parse(httpRequest.responseText);
-                            //TEKTONTODO remove this
-                            console.log(data);
 
                             // Check if there was an error
                             if(data.error) {
@@ -239,14 +234,9 @@
                 httpRequest.onreadystatechange=(e) => {
                     // If the httpRequest state is DONE
                     if(httpRequest.readyState == httpRequest.DONE) {
-                        //TEKTONTODO remove this
-                        console.log("Share Audience Response:");
-                        console.log(httpRequest.responseText);
                         var data = null;
                         if(httpRequest.responseText) {
                             data = JSON.parse(httpRequest.responseText);
-                            //TEKTONTODO remove this
-                            console.log(data);
 
                             // Check if there was an error
                             if(data.error) {
@@ -292,14 +282,9 @@
                 httpRequest.onreadystatechange=(e) => {
                     // If the httpRequest state is DONE
                     if(httpRequest.readyState == httpRequest.DONE) {
-                        //TEKTONTODO remove this
-                        console.log("Request Ad Account Access Response:");
-                        console.log(httpRequest.responseText);
                         var data = null;
                         if(httpRequest.responseText) {
                             data = JSON.parse(httpRequest.responseText);
-                            //TEKTONTODO remove this
-                            console.log(data);
 
                             // Check if there was an error
                             if(data.error) {

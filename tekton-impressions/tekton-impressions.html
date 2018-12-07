@@ -102,7 +102,7 @@
 
         <template is="dom-if" if="[[finished]]">
             <div id="impressionsDiv">
-                       <vaadin-grid id="universeGrid" items='[[sharedUniverses]]'>
+                       <vaadin-grid id="universeGrid" items=[[sharedUniverses]]>
                            <vaadin-grid-column width="100px" flex-grow="0">
                            </vaadin-grid-column>
                            <vaadin-grid-column flex-grow="1">
@@ -130,9 +130,9 @@
             is: "tekton-impressions",
             properties: {
                 clients: {
-                    type: Array,
+                    type: Object,
                     value: [],
-                    notify: false,
+                    notify: true
                 },
                 canAdvance: {
                     type: Boolean,
@@ -234,7 +234,11 @@
                 // Retrieving the client's Shared Audiences:
                 var sharedAudiences = dbData[index].sharedUniverses;
 
-                this.sharedUniverses = [];
+                // Clear the sharedUniverses array without reassigning the object
+                //this.sharedUniverses = [];
+                while(this.sharedUniverses.length > 0) {
+                    this.sharedUniverses.shift();
+                }
 
                 // Adding each one to our list:
                 for(var i = 0; i < sharedAudiences.length; i++) {
@@ -271,6 +275,9 @@
                     // Store the universe name and impression count for the table.
                     this.sharedUniverses.push({"name": name, "impressions": impressions});
                 }
+
+                console.log("Universes: ");
+                console.log(this.sharedUniverses);
 
                 // TODO - remove this
                 // This makes the loading spinner appear for 1 second before showing the impressions table.

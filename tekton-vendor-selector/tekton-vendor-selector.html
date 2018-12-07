@@ -93,20 +93,6 @@
                 }
             },
 
-            //TEKTONTODO - This function works, but it's not running very often
-            facebookApiLoaded: function() {
-                if(this.fbApiLoaded == true) {
-                    return true;
-                }
-                if(document.querySelector("tekton-container") == undefined) {
-                    return false;
-                }
-                if(document.querySelector("tekton-container").fbRef == undefined) {
-                    return false;
-                }
-                return true;
-            },
-
             fbButtonLogin: function() {
                 var curAuthToken = document.querySelector("tekton-container").userData.fb.accountAccessToken;
                 var FB = document.querySelector("tekton-container").fbRef;
@@ -125,11 +111,6 @@
                     } else {
                         document.querySelector("tekton-container").showErrorToast("Error - Unable to log in to Facebook.\n (Received invalid response from Facebook API)");
                     }
-
-                    //TEKTONTODO - remove this
-                    console.log("Facebook Login Response: ");
-                    console.log(response);
-
                 }, {scope: 'ads_management,ads_read', return_scopes: true});
                 // In the above call we are selecting the permissions: {ads_management, ads_read}
                 // for more info on permissions, see:
@@ -151,10 +132,6 @@
                     // If the httpRequest state is DONE
                     if(httpRequest.readyState == httpRequest.DONE) {
 
-                        //TEKTONTODO remove this
-                        console.log("Retrieving Account Info Response:");
-                        console.log(httpRequest.responseText);
-
                         if(httpRequest.responseText) {
                             var data = JSON.parse(httpRequest.responseText);
 
@@ -164,8 +141,6 @@
                                 return;
                             }
 
-                            //TEKTONTODO - remove this
-                            console.log(data);
                             // Store the user's name
                             document.querySelector("tekton-container").userData.fb.accountName = data.name;
 
@@ -196,10 +171,6 @@
                     // If the httpRequest state is DONE
                     if(httpRequest.readyState == httpRequest.DONE) {
 
-                        //TEKTONTODO remove this
-                        console.log("Retrieving Ad Accounts Response:");
-                        console.log(httpRequest.responseText);
-
                         if(httpRequest.responseText) {
                             var data = JSON.parse(httpRequest.responseText);
 
@@ -208,9 +179,6 @@
                                 document.querySelector("tekton-container").showErrorToast("Error - Unable to Retrieve Client Facebook Ad Accounts.\n (Facebook Error - \"" + data.error.message + "\")");
                                 return;
                             }
-
-                            //TEKTONTODO - remove this
-                            console.log(data);
                             var userData = document.querySelector("tekton-container").userData;
 
                             // Clear the list of ad accounts.
