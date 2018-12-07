@@ -1,5 +1,5 @@
 <link rel="import" href="../bower_components/polymer/polymer.html">
-<link rel="import" href="../bower_components/google-signin/google-signin.html">
+<link rel="import" href="../bower_components/paper-spinner/paper-spinner.html">
 
 <dom-module id="tekton-vendor-selector">
     <template>
@@ -92,11 +92,9 @@
         <div id="content">
             <h1 id = "title">Vendor Selection</h1>
 
-            <div id="logos">
-                <img id="facebookLogo" src="logos/facebook-sign-in-button.png" on-tap="openAdMenu" alt="Facebook">
-            </div>
+        <div id="logos">
+                <img id="facebookLogo" src="logos/facebook-sign-in-button.png" on-tap="fbButtonLogin" alt="Facebook">
         </div>
-
     </template>
 
     <script>
@@ -104,15 +102,138 @@
             is: "tekton-vendor-selector",
 
             properties: {
-                clientId: {
-                    type: String,
-                    value: "560070693060-2mvbvktiafm0f0hs7hno0819n1b99egn.apps.googleusercontent.com",
-                    notify: false
+            },
+
+            fbButtonLogin: function() {
+                var curAuthToken = document.querySelector("tekton-container").userData.fb.accountAccessToken;
+                var FB = document.querySelector("tekton-container").fbRef;
+                FB.login(function(response) {
+                    // If we have an auth response:
+                    if(response.authResponse) {
+
+                        // Store the User's user account access token
+                        var authToken = response.authResponse.accessToken;
+                        document.querySelector("tekton-container").userData.fb.accountAccessToken = authToken;
+                        // Store the User's account ID
+                        var accountId = response.authResponse.userID;
+                        document.querySelector("tekton-container").userData.fb.accountId = accountId;
+                        // Get the user's Account info
+                        document.querySelector("tekton-vendor-selector").getUserInfo();
+                    } else {
+                        document.querySelector("tekton-container").showErrorToast("Error - Unable to log in to Facebook.\n (Received invalid response from Facebook API)");
+                    }
+                }, {scope: 'ads_management,ads_read', return_scopes: true});
+                // In the above call we are selecting the permissions: {ads_management, ads_read}
+                // for more info on permissions, see:
+                // https://developers.facebook.com/docs/facebook-login/permissions/
+            },
+
+            getUserInfo: function() {
+                var userData = document.querySelector("tekton-container").userData;
+
+                var accessToken = userData.fb.accountAccessToken;
+
+                // Creating the HTTP request
+                const httpRequest = new XMLHttpRequest();
+                httpRequest.open("GET","https://graph.facebook.com/v3.2/" + "/me/?access_token=" + accessToken);
+                httpRequest.send();
+
+                httpRequest.onreadystatechange=(e) => {
+
+                    // If the httpRequest state is DONE
+                    if(httpRequest.readyState == httpRequest.DONE) {
+
+                        if(httpRequest.responseText) {
+                            var data = JSON.parse(httpRequest.responseText);
+
+                            // Check for errors
+                            if(data.error) {
+                                document.querySelector("tekton-container").showErrorToast("Error - Unable to Retrieve Client Facebook Account Info.\n (Facebook Error - \"" + data.error.message + "\")");
+                                return;
+                            }
+
+                            // Store the user's name
+                            document.querySelector("tekton-container").userData.fb.accountName = data.name;
+
+                            // Advance to the next stage
+                            document.querySelector("tekton-vendor-selector").getAdAccounts();
+                        } else {
+                            document.querySelector("tekton-container").showErrorToast("Error - Unable to Retrieve Client Facebook Account Info.\n (Received invalid response from Facebook API)");
+                        }
+                    }
                 }
             },
 
-            openAdMenu: function() {
-                this.fire('open-ad-menu-tapped');
+            getAdAccounts: function() {
+                var userData = document.querySelector("tekton-container").userData;
+
+                var userAccountId = userData.fb.accountId;
+                var accessToken = userData.fb.accountAccessToken;
+
+                // Creating the HTTP request
+                const httpRequest = new XMLHttpRequest();
+                // FB API Endpoint for retrieveing Ad Accounts:
+                // For available fields, see: https://developers.facebook.com/docs/marketing-api/reference/ad-account
+                httpRequest.open("GET","https://graph.facebook.com/v3.2/" + userAccountId + "/adaccounts?fields=['name','account_id','business']&access_token=" + accessToken);
+                httpRequest.send();
+
+                httpRequest.onreadystatechange=(e) => {
+
+                    // If the httpRequest state is DONE
+                    if(httpRequest.readyState == httpRequest.DONE) {
+
+                        if(httpRequest.responseText) {
+                            var data = JSON.parse(httpRequest.responseText);
+
+                            // Check for errors
+                            if(data.error) {
+                                document.querySelector("tekton-container").showErrorToast("Error - Unable to Retrieve Client Facebook Ad Accounts.\n (Facebook Error - \"" + data.error.message + "\")");
+                                return;
+                            }
+                            var userData = document.querySelector("tekton-container").userData;
+
+                            // Clear the list of ad accounts.
+                            while(userData.fb.adAccounts.length > 0) {
+                                userData.fb.adAccounts.pop();
+                            }
+
+                            // Constructing the ad accounts object:
+                            for(var i = 0; i < data.data.length; i++) {
+                                var adAccount = {};
+                                adAccount.name = data.data[i].name;
+                                adAccount.id = data.data[i].account_id;
+                                // If the Ad Account is associated with a business, store the business name and ID
+                                if(data.data[i].business != undefined) {
+                                    adAccount.businessID = data.data[i].business.id;
+                                    adAccount.businessName = data.data[i].business.name;
+                                }
+                                // Create the display name that the user will use to pick an Ad Account
+                                adAccount.displayName = adAccount.name + " (" + adAccount.id + ")";
+
+                                // Store the Ad Account
+                                userData.fb.adAccounts.push(adAccount);
+                            }
+
+                            // Construct a list of client ad accounts for the user to choose from
+                            var clientAdAccounts = [];
+                            // Store the ad accounts into tekton-audience-creator
+                            for(var i = 0; i < userData.fb.adAccounts.length; i++) {
+                                clientAdAccounts.push({label: userData.fb.adAccounts[i].displayName, value: userData.fb.adAccounts[i].id});
+                            }
+                            // Store it in tekton-audience-creator so that the user can pick
+                            document.querySelector("tekton-audience-creator").clientAdAccounts = clientAdAccounts;
+
+                            // Advance to the next page
+                            document.querySelector("tekton-vendor-selector").openAdSelector();
+                        } else {
+                            document.querySelector("tekton-container").showErrorToast("Error - Unable to Retrieve Client Facebook Ad Accounts.\n (Received invalid response from Facebook API)");
+                        }
+                    }
+                }
+            },
+
+            openAdSelector: function() {
+                this.fire('user-fb-signed-in');
             }
 
         });

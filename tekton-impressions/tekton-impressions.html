@@ -3,6 +3,9 @@
 <link rel="import" href="../bower_components/paper-button/paper-button.html">
 <link rel="import" href="../bower_components/vaadin-combo-box/vaadin-combo-box.html">
 <link rel="import" href="../bower_components/vaadin-date-picker/vaadin-date-picker.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid.html">
+<link rel="import" href="../bower_components/vaadin-grid/vaadin-grid-column.html">
+
 
 <dom-module id="tekton-impressions">
     <template>
@@ -17,13 +20,15 @@
             }
 
             #clientSelection {
+                width: 45%;
                 margin: 5% auto 0 auto;
             }
 
             #dateSectionTitle {
-                position: absolute;
-                left: 30px;
-                top: 165px;
+                left: 10%;
+                top: 10%;
+                font-family: arial;
+                font-weight: 700;
             }
 
             #fromDate {
@@ -40,6 +45,39 @@
             #dateSelection {
                 display: flex;
                 justify-content: center;
+            }
+
+            #buttonDiv {
+                margin-top: 2%;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+            }
+
+            #viewImpressions {
+                border: none;
+                border-radius: 3px;
+                background-color: #8AB05B;
+                color: #ffffff;
+                width: 45%;
+                text-transform: uppercase;
+                text-shadow: none;
+                font-weight: bold;
+                font-size: 17px;
+                font-family: Arial;
+                margin: 3% auto 0 auto;
+            }
+            #impressionsDiv {
+                margin-top: 10%;
+                box-shadow: 2px 2px 5px lightslategrey;
+            }
+            #spinnerDiv {
+                margin-top: 10%;
+                display: flex;
+                justify-content: center;
+            }
+            #title {
+                font-family: arial;
             }
 
             @media (max-width:320px)  {
@@ -102,7 +140,6 @@
 
                 #dataSelection {
                     margin: 0;
-                }
             }
 
         </style>
@@ -110,17 +147,44 @@
         <div id="content">
             <h2 id = "title">Impressions</h2>
 
-            <div id = "dataSelection">
-                <vaadin-combo-box id="clientSelection" label="Client:" items = "[[clients]]"></vaadin-combo-box>
-            </div>
-
-            <h4 id = "dateSectionTitle">Date Range:</h4>
-
-            <div id = "dateSelection">
-                <vaadin-date-picker id = "fromDate" label = "From:"></vaadin-date-picker>
-                <vaadin-date-picker id = "toDate" label = "To:"></vaadin-date-picker>
-            </div>
+        <div id = "dataSelection">
+            <vaadin-combo-box id="clientSelection" label="Client:" items = "[[clients]]" value="{{client}}">
+                <template>[[item.label]]   (User Account ID: [[item.value]])</template>
+            </vaadin-combo-box>
         </div>
+
+
+        <div id = "dateSelection">
+            <div id = "dateSectionTitle">Date Range:</div>
+            <vaadin-date-picker id = "fromDate" label = "From:" value="{{fromDate}}"></vaadin-date-picker>
+            <vaadin-date-picker id = "toDate" label = "To:" value="{{toDate}}"></vaadin-date-picker>
+        </div>
+
+
+
+
+        <template is="dom-if" if="[[finished]]">
+            <div id="impressionsDiv">
+                       <vaadin-grid id="universeGrid" items=[[sharedUniverses]]>
+                           <vaadin-grid-column width="100px" flex-grow="0">
+                           </vaadin-grid-column>
+                           <vaadin-grid-column flex-grow="1">
+                               <template class="header">Universe</template>
+                               <template>[[item.name]]</template>
+                           </vaadin-grid-column>
+                           <vaadin-grid-column flex-grow="1">
+                               <template class="header">Impressions</template>
+                               <template>[[item.impressions]]</template>
+                           </vaadin-grid-column>
+                       </vaadin-grid>
+                   </div>
+        </template>
+
+        <template is="dom-if" if="[[inProgress]]">
+            <div id="spinnerDiv">
+                <paper-spinner id="impressionsProgressSpinner" active></paper-spinner>
+            </div>
+        </template>
 
     </template>
 
@@ -129,10 +193,159 @@
             is: "tekton-impressions",
             properties: {
                 clients: {
-                    type: Array,
-                    value: ["Aaron", "Luke", "Luis", "Ryan", "EJ", "David", "Jake"],
-                    notify: false
+                    type: Object,
+                    value: [],
+                    notify: true
+                },
+                canAdvance: {
+                    type: Boolean,
+                    notify: true,
+                    value: false
+                },
+                client: {
+                    type: String,
+                    value: undefined,
+                    notify: true,
+                    observer: 'checkIfCanAdvance'
+                },
+                fromDate: {
+                    type: String,
+                    value: undefined,
+                    notify: true,
+                    observer: 'checkIfCanAdvance'
+                },
+                toDate: {
+                    type: String,
+                    value: undefined,
+                    notify: true,
+                    observer: 'checkIfCanAdvance'
+                },
+                sharedUniverses: {
+                    type: Object,
+                    notify: true,
+                    value: []
+                },
+                inProgress: {
+                    type: Boolean,
+                    notify: true,
+                    value: false
+                },
+                finished: {
+                    type: Boolean,
+                    notify: true,
+                    value: false
                 }
+
+            },
+            // Called when one of the above variables changes
+            checkIfCanAdvance: function(newValue, oldValue) {
+                this.inProgress = false;
+                this.finished = false;
+
+                // If either of the dates are empty:
+                if(this.fromDate == "" || this.toDate == "") {
+                    this.canAdvance = false;
+                    return;
+                }
+                // If the from is after to date
+                if(Date.parse(this.fromDate) > Date.parse(this.toDate)) {
+                    document.querySelector("tekton-container").showErrorToast("Error - From date must be on or before to date.");
+                    this.canAdvance = false;
+                    return;
+                }
+
+                // If there is no client selected
+                if(this.client == "") {
+                    this.canAdvance = false;
+                    return;
+                }
+
+                this.canAdvance = true;
+                this.generateImpressionsReport();
+            },
+
+            // Generates the impression report via Facebook API calls
+            generateImpressionsReport: function() {
+                this.inProgress = true;
+
+                console.log("generate Impressions Report View");
+                //TODO - generate and display impressions report
+
+                // Getting a list of all universes from user
+                var clientUniverses = [];
+
+                var dbData = document.querySelector("tekton-container").firebaseQueryData;
+
+                var index = -1;
+                // Find the index of the chosen ad account
+                for(var i = 0; i < dbData.length; i++) {
+                    //FIXME - for now we are storing the user by their FB account ID
+                    // We may want to store them by their PDI account ID instead
+                    if(dbData[i]["$key"] == this.client) {
+                        index = i;
+                        break;
+                    }
+                }
+
+                // If we didn't find it, show an error and stop.
+                if(index == -1) {
+                    document.querySelector("tekton-container").showErrorToast("Error - No data found for client with ID: \"" + this.client + "\".");
+                    this.inProgress = false;
+                    return;
+                }
+
+                // Retrieving the client's Shared Audiences:
+                var sharedAudiences = dbData[index].sharedUniverses;
+
+                // Clear the sharedUniverses array without reassigning the object
+                //this.sharedUniverses = [];
+                while(this.sharedUniverses.length > 0) {
+                    this.sharedUniverses.shift();
+                }
+
+                // Adding each one to our list:
+                for(var i = 0; i < sharedAudiences.length; i++) {
+                    // TODO - use the PDI Universe name instead of the Facebook Audience name
+                    //var name = sharedAudiences[i].pdiUniverseName;
+                    var name = sharedAudiences[i].fbCustomAudienceName;
+
+                    var fbAudienceId = sharedAudiences[i].fbCustomAudienceId;
+
+                    // TODO - make API call to facebook to get impression counts
+                    // The API call:
+                    // GET to "https://graph.facebook.com/v3.2/" + fbAudienceId + "/ads"
+                    // (see: https://developers.facebook.com/docs/marketing-api/reference/custom-audience/ads/)
+                    // Should yield a list of ads that are using the audience.
+                    // This endpoint will need to be tested to verify how we can obtain the impression counts
+                    // once we have actual accounts with real ads and real impressions to test with.
+                    // ------------------------------------------------------------
+                    // We may not have read-access to the client's ads.
+                    // This is the reason we request read access to the client ad accounts after sharing the audience with them.
+                    // If the client never agrees to share their ad account with us, their access to the audience should be revoked
+                    // via the facebook UI
+                    // ------------------------------------------------------------
+                    // Once we have a list of ads that we can query impression counts
+                    // call can be used to retrieve impression counts for a desired date range.
+                    // The following API call works for retrieving the TOTAL impression counts for an ENTIRE ad account for a desired date range
+                    // GET to "https://graph.facebook.com/v3.2/act_"+ fbAdAccountId + "/insights?time_range={"since":"2018-10-26","until":"2018-11-15"}
+                    // This is not the API call that will be needed, but it will resemble this.
+                    // ------------------------------------------------------------
+                    // Finally, we add all of the impression counts together for all ads for a universe.
+                    // ------------------------------------------------------------
+                    // for now, impression counts are randomly-generated.
+                    var impressions = Math.floor(Math.random() * 10000);
+
+                    // Store the universe name and impression count for the table.
+                    this.sharedUniverses.push({"name": name, "impressions": impressions});
+                }
+
+                // TODO - remove this
+                // This makes the loading spinner appear for 1 second before showing the impressions table.
+                setTimeout(function() {
+                    // Indicate that we are done
+                    document.querySelector("tekton-impressions").inProgress = false;
+                    document.querySelector("tekton-impressions").finished = true;
+                }, 1000);
             }
         });
     </script>

@@ -1,5 +1,6 @@
 {
   "projects": {
-    "staging": "tekton-ad-module"
+    "staging": "tekton-ad-module",
+    "default": "tekton-ad-module"
   }
 }

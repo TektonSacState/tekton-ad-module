@@ -86,9 +86,7 @@
             </div>
 
             <div id = "loginInputs">
-                <paper-input id="userName" class="loginInput" label="Username"></paper-input>
-                <paper-input id="password" class="loginInput" label="Password" type="password"></paper-input>
-                <paper-button id="signIn" on-tap="openUser">Sign In</paper-button>
+                <paper-button id="signIn" on-tap="openPDILoginPage">Sign In with PDI</paper-button>
             </div>
         </div>
 
@@ -99,18 +97,22 @@
            is: "tekton-login",
 
            properties: {
-
            },
 
-           openAdmin: function() {
-               this.fire('admin-signed-in');
-           },
+           openPDILoginPage: function() {
+               var appConfig = document.querySelector("tekton-container").appConfig;
 
-           openUser: function() {
-               this.$$('#userName').value = null;
-               this.$$('#password').value = null;
-               this.fire('user-signed-in');
-           }
+               var apiUrl = appConfig.pdiConfig.authApiUrl;
+               var apiKey = appConfig.pdiConfig.apiKey;
+               var redirectUrl = appConfig.pdiConfig.authRedirectUrl;
+
+               var url = apiUrl + "auth/authorize";
+               url += "?api_key=" + encodeURIComponent(apiKey);
+               url += "&redirect_uri=" + encodeURIComponent(redirectUrl);
+
+               // Redirect the user to the auth URL:
+               window.location.href = url;
+           },
         });
     </script>
 </dom-module>
