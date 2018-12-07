@@ -39,7 +39,6 @@
                 right: 5px;
                 top: 11px;
                 color: #525252;
-                z-index: 1000;
             }
 
             #back {
@@ -89,6 +88,7 @@
                     position: relative;
                     box-shadow: 2px 2px 20px lightslategrey;
                     overflow-x: hidden;
+                    overflow-y: hidden;
                 }
 
                 #done {
@@ -112,6 +112,7 @@
                     position: relative;
                     box-shadow: 2px 2px 20px lightslategrey;
                     overflow-x: hidden;
+                    overflow-y: hidden;
                 }
 
                 #done {
@@ -345,6 +346,12 @@
                 }
                 document.querySelector("tekton-impressions").clients = clients;
 
+            },
+
+            toggleAdMenu: function() {
+                this.$$('#pages').selected = "9";
+                this.canSignOut = true;
+                this.canGoBack = true;
             },
 
             goBack: function() {

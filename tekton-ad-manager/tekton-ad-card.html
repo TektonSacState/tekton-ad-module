@@ -1,0 +1,91 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+<link rel="import" href="../../bower_components/paper-card/paper-card.html">
+<link rel="import" href="../../bower_components/paper-button/paper-button.html">
+
+<dom-module id="tekton-ad-card">
+    <template>
+        <style>
+            paper-card {
+                margin-top: 5%;
+            }
+
+            .card-heading {
+
+            }
+
+            .card-content, .card-heading {
+                background: #42e5f4;
+            }
+
+            .card-actions {
+                background: white;
+            }
+
+            @media (max-width:320px)  {
+                /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+
+                paper-card {
+                    width: 80%;
+                    margin: 5% auto 0 auto;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .card-actions {
+                    text-align: center;
+                }
+
+                paper-button {
+                    width: 90%;
+                }
+            }
+
+            @media (max-width:480px)  {
+                /* smartphones, Android phones, landscape iPhone */
+
+                paper-card {
+                    width: 80%;
+                    margin: 5% auto 0 auto;
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .card-actions {
+                    text-align: center;
+                }
+
+                paper-button {
+                    width: 90%;
+                }
+            }
+        </style>
+
+        <paper-card heading="[[title]]" class="card-heading">
+            <div class="card-content">[[content]]</div>
+            <div class="card-actions">
+                <paper-button>Edit</paper-button>
+                <paper-button>Delete</paper-button>
+                <paper-button>Publish</paper-button>
+            </div>
+        </paper-card>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "tekton-ad-card",
+
+            properties: {
+                title: {
+                    type: String,
+                    notify: false
+                },
+
+                content: {
+                    type: String,
+                    notify: false
+                }
+            }
+        });
+    </script>
+</dom-module>

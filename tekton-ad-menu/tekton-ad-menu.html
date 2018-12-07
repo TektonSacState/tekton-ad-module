@@ -1,0 +1,78 @@
+<link rel="import" href="../../bower_components/polymer/polymer.html">
+
+<dom-module id="tekton-ad-menu">
+    <template>
+        <style>
+            #menuButtons {
+                text-align: center;
+                position: relative;
+                top: 20vh;
+            }
+
+            #createAd {
+                background: #8AB05B;
+                color: white;
+                font-weight: bold;
+            }
+
+            #chooseAd {
+                border-radius: 3px;
+                background: #5b9fb0;
+                color: white;
+                text-transform: uppercase;
+                font-weight: bold;
+                font-family: Arial;
+            }
+
+            @media (max-width:320px)  {
+                /* smartphones, portrait iPhone, portrait 480x320 phones (Android) */
+
+                #menuButtons {
+                    top: 0;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                }
+            }
+
+            @media (max-width:480px)  {
+                /* smartphones, Android phones, landscape iPhone */
+
+                #menuButtons {
+                    top: 0;
+                    display: flex;
+                    flex-direction: row;
+                    align-items: center;
+                    justify-content: center;
+                    height: 100%;
+                }
+            }
+        </style>
+
+        <div id="menuButtons">
+            <paper-button id = "createAd" on-tap="openAdCreator">Create Ad</paper-button>
+            <paper-button id = "chooseAd" on-tap="openAdManager">Choose Ad</paper-button>
+        </div>
+
+    </template>
+
+    <script>
+        Polymer({
+            is: "tekton-ad-menu",
+
+            properties: {
+
+            },
+
+            openAdCreator: function() {
+                this.fire('logo-tapped');
+            },
+
+            openAdManager: function() {
+                this.fire('manage-ads-tapped');
+            }
+        });
+    </script>
+</dom-module>
